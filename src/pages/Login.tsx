@@ -1,75 +1,123 @@
 
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/contexts/AuthContext";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
-import { Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const loginSchema = z.object({
+  email: z.string().email("Digite um email válido"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
+  const { signIn, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
+    await signIn(data.email, data.password);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <div className="h-14 w-14 rounded-full bg-tc-blue bg-opacity-10 flex items-center justify-center">
-                <Clock className="h-8 w-8 text-tc-blue" />
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold">Bem-vindo de volta</h1>
-            <p className="text-gray-600 mt-2">Entre na sua conta para continuar</p>
+      <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md">
+          <div className="text-center">
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+              Entrar no TempoCerto
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Ou{" "}
+              <Link
+                to="/cadastro"
+                className="font-medium text-tc-blue hover:text-tc-blue-dark"
+              >
+                crie sua conta agora
+              </Link>
+            </p>
           </div>
-          
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <form>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    E-mail
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="seu-email@exemplo.com"
-                    className="w-full"
-                  />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="email" 
+                        placeholder="seu@email.com" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex items-center justify-between">
+                <div className="text-sm">
+                  <Link
+                    to="#"
+                    className="font-medium text-tc-blue hover:text-tc-blue-dark"
+                  >
+                    Esqueceu sua senha?
+                  </Link>
                 </div>
-                
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                      Senha
-                    </label>
-                    <Link to="/recuperar-senha" className="text-sm text-tc-blue hover:underline">
-                      Esqueceu sua senha?
-                    </Link>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Sua senha"
-                    className="w-full"
-                  />
-                </div>
-                
-                <Button className="bg-tc-blue hover:bg-tc-blue-dark w-full">
-                  Entrar
-                </Button>
               </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-tc-blue hover:bg-tc-blue-dark"
+                disabled={loading}
+              >
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
             </form>
-            
-            <div className="mt-6 text-center">
-              <p className="text-gray-600 text-sm">
-                Não tem uma conta?{" "}
-                <Link to="/cadastro" className="text-tc-blue hover:underline">
-                  Cadastre-se
-                </Link>
-              </p>
-            </div>
-          </div>
+          </Form>
         </div>
       </main>
       <Footer />

@@ -1,111 +1,117 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Clock, ShieldCheck, UserCheck, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   return (
-    <section className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="max-w-lg">
-            <div className="inline-flex items-center gap-2 bg-tc-gray rounded-full px-4 py-1.5 mb-6">
-              <Clock className="h-4 w-4 text-tc-blue" />
-              <span className="text-sm font-medium">Economize tempo no dia a dia</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Diga adeus às filas e esperas desnecessárias
-            </h1>
-            <p className="text-gray-600 text-lg mb-8">
-              O TempoCerto permite que você economize tempo em pequenos compromissos do dia a dia, com agendamentos inteligentes e micro pagamentos.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/cadastro">
-                <Button className="btn-primary w-full sm:w-auto">Comece agora</Button>
-              </Link>
-              <Link to="/como-funciona">
-                <Button variant="outline" className="btn-outline w-full sm:w-auto">Como funciona</Button>
+    <section className="relative overflow-hidden bg-white py-16 sm:py-24">
+      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+        <div
+          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-tc-blue to-tc-green opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+          style={{
+            clipPath:
+              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+          }}
+        />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:mx-0">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            Economize tempo nos seus compromissos diários
+          </h1>
+          <p className="mt-6 text-lg leading-8 text-gray-600">
+            Chega de esperar em filas e perder tempo. Com o TempoCerto, você agenda pequenos compromissos com facilidade, paga uma taxa simbólica e garante seu atendimento no horário certo.
+          </p>
+          <div className="mt-10 flex items-center gap-x-6">
+            <Link to="/cadastro">
+              <Button className="bg-tc-blue hover:bg-tc-blue-dark px-8 py-6 text-lg">
+                Comece agora
+              </Button>
+            </Link>
+            <Link
+              to="/como-funciona"
+              className="text-base font-semibold leading-6 text-gray-900 hover:text-tc-blue"
+            >
+              Saiba mais <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-16 sm:mt-24 lg:mt-16 lg:flex lg:justify-between">
+          <div className="relative lg:w-1/2 lg:pr-8">
+            <div className="mx-auto max-w-2xl lg:mx-0">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                Para clientes
+              </h2>
+              <ul className="mt-6 space-y-4 text-gray-600">
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Reserve horários em diversos serviços</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Economize tempo evitando filas</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Receba lembretes de compromissos</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Pague apenas uma taxa simbólica</span>
+                </li>
+              </ul>
+              <Link to="/cadastro" className="mt-6 inline-block">
+                <Button variant="outline" className="mt-4">
+                  Criar conta
+                </Button>
               </Link>
             </div>
           </div>
-          
-          <div className="lg:flex justify-center hidden">
-            <div className="relative h-[500px] w-[350px] bg-gradient-to-br from-tc-blue to-tc-blue-dark rounded-3xl shadow-xl overflow-hidden">
-              <div className="absolute inset-1 bg-white rounded-2xl p-4">
-                <div className="bg-tc-gray rounded-lg h-12 mb-4 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-tc-blue mr-2" />
-                  <span className="font-semibold">TempoCerto</span>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <h3 className="font-medium mb-1">Barbearia Stylus</h3>
-                    <p className="text-sm text-gray-500">Corte de cabelo - 30min</p>
-                    <div className="mt-3 grid grid-cols-3 gap-2">
-                      <div className="bg-tc-blue bg-opacity-10 text-tc-blue rounded-md p-2 text-xs text-center">9:30</div>
-                      <div className="bg-tc-blue text-white rounded-md p-2 text-xs text-center animate-pulse-subtle">10:00</div>
-                      <div className="bg-tc-blue bg-opacity-10 text-tc-blue rounded-md p-2 text-xs text-center">10:30</div>
-                    </div>
-                    <div className="mt-3 text-center py-2 bg-tc-green rounded text-white text-sm">
-                      Comprar horário R$ 0,99
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <h3 className="font-medium mb-1">Clínica Bem Estar</h3>
-                    <p className="text-sm text-gray-500">Consulta rápida - 15min</p>
-                    <div className="mt-3 grid grid-cols-4 gap-2">
-                      <div className="bg-tc-blue bg-opacity-10 text-tc-blue rounded-md p-2 text-xs text-center">13:15</div>
-                      <div className="bg-tc-blue bg-opacity-10 text-tc-blue rounded-md p-2 text-xs text-center">13:30</div>
-                      <div className="bg-tc-blue bg-opacity-10 text-tc-blue rounded-md p-2 text-xs text-center">13:45</div>
-                      <div className="bg-tc-blue bg-opacity-10 text-tc-blue rounded-md p-2 text-xs text-center">14:00</div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-tc-gray rounded-lg p-4">
-                    <h3 className="font-medium text-sm mb-2">Próximos agendamentos</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center bg-white rounded-md p-2 text-xs">
-                        <div className="h-8 w-8 rounded-full bg-tc-blue flex items-center justify-center text-white mr-2">BS</div>
-                        <div>
-                          <p className="font-medium">Barbearia Stylus</p>
-                          <p className="text-gray-500">Hoje, 10:00</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+          <div className="relative mt-10 lg:mt-0 lg:w-1/2 lg:pl-8">
+            <div className="mx-auto max-w-2xl lg:mx-0">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                Para prestadores
+              </h2>
+              <ul className="mt-6 space-y-4 text-gray-600">
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Gerencie seus horários com facilidade</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Reduza faltas e cancelamentos</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Aumente a satisfação dos clientes</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">✓</span>
+                  <span>Otimize sua agenda e ganhe mais</span>
+                </li>
+              </ul>
+              <Link to="/provider/register" className="mt-6 inline-block">
+                <Button variant="outline" className="mt-4">
+                  Cadastrar negócio
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
-          <div className="flex flex-col items-center text-center p-6 rounded-lg border border-gray-100 shadow-sm">
-            <div className="h-12 w-12 rounded-full bg-tc-blue bg-opacity-10 flex items-center justify-center mb-4">
-              <Clock className="h-6 w-6 text-tc-blue" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">Economize tempo</h3>
-            <p className="text-gray-600">Agende seus compromissos sem esperas desnecessárias por apenas R$ 0,99.</p>
-          </div>
-          
-          <div className="flex flex-col items-center text-center p-6 rounded-lg border border-gray-100 shadow-sm">
-            <div className="h-12 w-12 rounded-full bg-tc-green bg-opacity-10 flex items-center justify-center mb-4">
-              <ShieldCheck className="h-6 w-6 text-tc-green" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">Garantia de horário</h3>
-            <p className="text-gray-600">Seu slot é garantido e exclusivo, sem surpresas de última hora.</p>
-          </div>
-          
-          <div className="flex flex-col items-center text-center p-6 rounded-lg border border-gray-100 shadow-sm">
-            <div className="h-12 w-12 rounded-full bg-tc-blue bg-opacity-10 flex items-center justify-center mb-4">
-              <UserCheck className="h-6 w-6 text-tc-blue" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">Fácil de usar</h3>
-            <p className="text-gray-600">Busque serviços próximos, selecione um horário e pronto!</p>
-          </div>
-        </div>
+      </div>
+
+      <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+        <div
+          className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-tc-green to-tc-blue opacity-20 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+          style={{
+            clipPath:
+              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+          }}
+        />
       </div>
     </section>
   );
