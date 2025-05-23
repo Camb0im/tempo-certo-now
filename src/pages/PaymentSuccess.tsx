@@ -12,13 +12,42 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CheckCircle, Loader2, Calendar, MapPin, Clock } from "lucide-react";
 import Logo from "@/components/Logo";
 
+// Define proper types for the booking data
+type TimeSlot = {
+  id: string;
+  start_time: string;
+  end_time: string;
+  is_booked: boolean;
+}
+
+type ServiceProvider = {
+  id: string;
+  business_name: string;
+  address: string | null;
+}
+
+type Service = {
+  id: string;
+  name: string;
+  duration: number;
+  service_providers: ServiceProvider;
+}
+
+type Booking = {
+  id: string;
+  time_slots: TimeSlot;
+  services: Service;
+  payment_status: string;
+  status: string;
+}
+
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const navigate = useNavigate();
   const { user } = useAuth();
   const [verifying, setVerifying] = useState(true);
-  const [bookingDetails, setBookingDetails] = useState<any>(null);
+  const [bookingDetails, setBookingDetails] = useState<Booking | null>(null);
   
   useEffect(() => {
     async function verifyPayment() {
@@ -38,22 +67,21 @@ const PaymentSuccess = () => {
             variant: "default",
           });
           
-          // Buscar detalhes da reserva
+          // Fetch booking details - simplified query to avoid deep nesting
           const { data: bookingData, error: bookingError } = await supabase
             .from('bookings')
             .select(`
-              *,
-              time_slots(*),
-              services(
-                *,
-                service_providers(*)
-              )
+              id, 
+              status,
+              payment_status,
+              time_slots (id, start_time, end_time),
+              services (id, name, duration, service_providers (id, business_name, address))
             `)
             .eq('stripe_session_id', sessionId)
             .single();
             
           if (!bookingError && bookingData) {
-            setBookingDetails(bookingData);
+            setBookingDetails(bookingData as Booking);
           }
         } else {
           toast({
