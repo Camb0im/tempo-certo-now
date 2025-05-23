@@ -16,8 +16,11 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import BusinessPage from "./pages/BusinessPage";
 import PricingPage from "./pages/PricingPage";
-import NotFound from "./pages/NotFound";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import NotFound from "./pages/NotFound";
+import ExplorePage from "./pages/ExplorePage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +37,8 @@ const App = () => (
             <Route path="/como-funciona" element={<HowItWorksPage />} />
             <Route path="/para-negocios" element={<BusinessPage />} />
             <Route path="/precos" element={<PricingPage />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/service/:id" element={<ServiceDetailsPage />} />
             
             {/* Rotas de autenticação */}
             <Route 
@@ -70,6 +75,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/booking/:id" 
+              element={
+                <ProtectedRoute>
+                  <ServiceDetailsPage />
+                </ProtectedRoute>
+              } 
+            />
             
             {/* Rotas protegidas de prestador */}
             <Route 
@@ -85,6 +98,16 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ProviderDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Rota de administração */}
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
                 </ProtectedRoute>
               } 
             />

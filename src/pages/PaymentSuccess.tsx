@@ -1,14 +1,17 @@
 
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Loader2, Calendar, MapPin, Clock } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -16,6 +19,7 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [verifying, setVerifying] = useState(true);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
   
   useEffect(() => {
     async function verifyPayment() {
@@ -34,6 +38,24 @@ const PaymentSuccess = () => {
             description: "Seu agendamento está garantido.",
             variant: "default",
           });
+          
+          // Buscar detalhes da reserva
+          const { data: bookingData, error: bookingError } = await supabase
+            .from('bookings')
+            .select(`
+              *,
+              time_slots(*),
+              services(
+                *,
+                service_providers(*)
+              )
+            `)
+            .eq('stripe_session_id', sessionId)
+            .single();
+            
+          if (!bookingError && bookingData) {
+            setBookingDetails(bookingData);
+          }
         } else {
           toast({
             title: "Verificação de pagamento",
@@ -55,37 +77,152 @@ const PaymentSuccess = () => {
     
     verifyPayment();
   }, [sessionId, user]);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    
+    const options: Intl.DateTimeFormatOptions = { 
+      day: '2-digit', 
+      month: 'long', 
+      year: 'numeric',
+      weekday: 'long'
+    };
+    return new Date(dateString).toLocaleDateString('pt-BR', options);
+  };
+
+  const formatTime = (dateString: string) => {
+    if (!dateString) return '';
+    
+    const options: Intl.DateTimeFormatOptions = { 
+      hour: '2-digit', 
+      minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleTimeString('pt-BR', options);
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow flex items-center justify-center py-16 px-4">
-        <div className="max-w-md w-full text-center">
+      <main className="flex-grow flex items-center justify-center py-16 px-4 bg-gray-50">
+        <Card className="max-w-md w-full">
           {verifying ? (
-            <>
-              <Loader2 className="h-12 w-12 animate-spin text-tc-blue mx-auto mb-4" />
-              <h1 className="text-2xl font-bold mb-2">Confirmando seu pagamento</h1>
-              <p className="text-gray-600 mb-8">Aguarde enquanto verificamos seu pagamento...</p>
-            </>
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+              <Loader2 className="h-12 w-12 animate-spin text-tc-blue mb-4" />
+              <CardTitle className="text-2xl mb-2">Confirmando seu pagamento</CardTitle>
+              <CardDescription className="mb-8">
+                Aguarde enquanto verificamos seu pagamento...
+              </CardDescription>
+            </CardContent>
           ) : (
             <>
-              <CheckCircle className="h-16 w-16 text-tc-green mx-auto mb-4" />
-              <h1 className="text-2xl font-bold mb-2">Pagamento processado!</h1>
-              <p className="text-gray-600 mb-8">
-                Seu pagamento foi processado e seu agendamento está confirmado.
-                Você pode ver os detalhes em seu dashboard.
-              </p>
-              <div className="space-y-4">
+              <CardHeader className="text-center pb-2">
+                <div className="flex justify-center mb-4">
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20
+                    }}
+                    className="bg-green-100 rounded-full p-3"
+                  >
+                    <CheckCircle className="h-10 w-10 text-green-600" />
+                  </motion.div>
+                </div>
+                <CardTitle className="text-2xl">Pagamento Confirmado!</CardTitle>
+                <CardDescription>
+                  Seu agendamento foi concluído e está garantido.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="pt-4">
+                {bookingDetails ? (
+                  <div className="space-y-4">
+                    <div className="text-center mb-4">
+                      <h3 className="font-medium text-lg">
+                        {bookingDetails.services?.name}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {bookingDetails.services?.service_providers?.business_name}
+                      </p>
+                    </div>
+                    
+                    <div className="rounded-lg border bg-card p-4 space-y-3">
+                      <div className="flex items-start">
+                        <Calendar className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium">
+                            {formatDate(bookingDetails.time_slots?.start_time)}
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            {formatTime(bookingDetails.time_slots?.start_time)} - {formatTime(bookingDetails.time_slots?.end_time)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <MapPin className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium">
+                            {bookingDetails.services?.service_providers?.business_name}
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            {bookingDetails.services?.service_providers?.address || "Endereço não disponível"}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Clock className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium">
+                            Duração estimada
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            {bookingDetails.services?.duration || 30} minutos
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 text-center">
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Um e-mail com os detalhes do seu agendamento foi enviado para você.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ID da Reserva: {bookingDetails.id}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p>Seu pagamento foi processado com sucesso!</p>
+                    <p className="text-muted-foreground text-sm mt-2">
+                      Você pode visualizar todos os detalhes no seu dashboard.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+              
+              <CardFooter className="flex flex-col gap-2">
                 <Button 
                   className="w-full bg-tc-blue hover:bg-tc-blue-dark"
                   onClick={() => navigate("/dashboard")}
                 >
                   Ir para o Dashboard
                 </Button>
-              </div>
+                <Button 
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate("/explore")}
+                >
+                  Agendar Outro Serviço
+                </Button>
+              </CardFooter>
             </>
           )}
-        </div>
+        </Card>
       </main>
       <Footer />
     </div>
