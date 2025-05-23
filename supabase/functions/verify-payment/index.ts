@@ -61,6 +61,7 @@ serve(async (req) => {
       .update({
         payment_status: paymentStatus,
         updated_at: new Date().toISOString(),
+        stripe_session_id: sessionId, // Make sure this is stored
       })
       .eq("stripe_session_id", sessionId);
 

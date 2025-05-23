@@ -12,33 +12,21 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CheckCircle, Loader2, Calendar, MapPin, Clock } from "lucide-react";
 import Logo from "@/components/Logo";
 
-// Define simpler types without circular references
-type TimeSlot = {
-  id: string;
-  start_time: string;
-  end_time: string;
-  is_booked: boolean;
-}
-
-type ServiceProvider = {
-  id: string;
-  business_name: string;
-  address: string | null;
-}
-
-type Service = {
-  id: string;
-  name: string;
-  duration: number;
-  service_provider: ServiceProvider;
-}
-
+// Define flat types to avoid deep nesting and circular references
 type BookingDetails = {
   id: string;
-  time_slot: TimeSlot;
-  service: Service;
   payment_status: string;
   status: string;
+  time_slot_id?: string;
+  time_slot_start_time?: string;
+  time_slot_end_time?: string;
+  time_slot_is_booked?: boolean;
+  service_id?: string;
+  service_name?: string;
+  service_duration?: number;
+  provider_id?: string;
+  provider_business_name?: string;
+  provider_address?: string | null;
 }
 
 const PaymentSuccess = () => {
@@ -67,23 +55,64 @@ const PaymentSuccess = () => {
             variant: "default",
           });
           
-          // Use a simpler query structure to avoid deep nesting issues
-          const { data: bookingData, error: bookingError } = await supabase
+          // Use flat query with explicit column selection to avoid deep nesting
+          const { data: booking, error: bookingError } = await supabase
             .from('bookings')
             .select(`
-              id, 
-              status,
-              payment_status,
-              time_slot:time_slots!inner(id, start_time, end_time, is_booked),
-              service:services!inner(id, name, duration, 
-                service_provider:service_providers!inner(id, business_name, address)
-              )
+              id, status, payment_status,
+              time_slot_id
             `)
             .eq('stripe_session_id', sessionId)
             .single();
             
-          if (!bookingError && bookingData) {
-            setBookingDetails(bookingData as unknown as BookingDetails);
+          if (bookingError) {
+            console.error("Error fetching booking:", bookingError);
+            return;
+          }
+          
+          // If we found a booking, get the related data separately to avoid deep nesting
+          if (booking) {
+            // Get time slot details
+            const { data: timeSlot } = await supabase
+              .from('time_slots')
+              .select('id, start_time, end_time, is_booked, service_id')
+              .eq('id', booking.time_slot_id)
+              .single();
+              
+            // Get service details
+            if (timeSlot?.service_id) {
+              const { data: service } = await supabase
+                .from('services')
+                .select('id, name, duration, provider_id')
+                .eq('id', timeSlot.service_id)
+                .single();
+                
+              // Get provider details
+              if (service?.provider_id) {
+                const { data: provider } = await supabase
+                  .from('service_providers')
+                  .select('id, business_name, address')
+                  .eq('id', service.provider_id)
+                  .single();
+                  
+                // Combine all the data into a flat structure
+                setBookingDetails({
+                  id: booking.id,
+                  status: booking.status,
+                  payment_status: booking.payment_status,
+                  time_slot_id: timeSlot?.id,
+                  time_slot_start_time: timeSlot?.start_time,
+                  time_slot_end_time: timeSlot?.end_time,
+                  time_slot_is_booked: timeSlot?.is_booked,
+                  service_id: service?.id,
+                  service_name: service?.name,
+                  service_duration: service?.duration,
+                  provider_id: provider?.id,
+                  provider_business_name: provider?.business_name,
+                  provider_address: provider?.address
+                });
+              }
+            }
           }
         } else {
           toast({
@@ -107,7 +136,7 @@ const PaymentSuccess = () => {
     verifyPayment();
   }, [sessionId, user]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
     if (!dateString) return '';
     
     const options: Intl.DateTimeFormatOptions = { 
@@ -119,7 +148,7 @@ const PaymentSuccess = () => {
     return new Date(dateString).toLocaleDateString('pt-BR', options);
   };
 
-  const formatTime = (dateString: string) => {
+  const formatTime = (dateString: string | undefined) => {
     if (!dateString) return '';
     
     const options: Intl.DateTimeFormatOptions = { 
@@ -161,10 +190,10 @@ const PaymentSuccess = () => {
                   <div className="space-y-4">
                     <div className="text-center mb-4">
                       <h3 className="font-medium text-lg">
-                        {bookingDetails.service?.name}
+                        {bookingDetails.service_name}
                       </h3>
                       <p className="text-muted-foreground">
-                        {bookingDetails.service?.service_provider?.business_name}
+                        {bookingDetails.provider_business_name}
                       </p>
                     </div>
                     
@@ -173,10 +202,10 @@ const PaymentSuccess = () => {
                         <Calendar className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium">
-                            {formatDate(bookingDetails.time_slot?.start_time)}
+                            {formatDate(bookingDetails.time_slot_start_time)}
                           </p>
                           <p className="text-muted-foreground text-sm">
-                            {formatTime(bookingDetails.time_slot?.start_time)} - {formatTime(bookingDetails.time_slot?.end_time)}
+                            {formatTime(bookingDetails.time_slot_start_time)} - {formatTime(bookingDetails.time_slot_end_time)}
                           </p>
                         </div>
                       </div>
@@ -185,10 +214,10 @@ const PaymentSuccess = () => {
                         <MapPin className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium">
-                            {bookingDetails.service?.service_provider?.business_name}
+                            {bookingDetails.provider_business_name}
                           </p>
                           <p className="text-muted-foreground text-sm">
-                            {bookingDetails.service?.service_provider?.address || "Endereço não disponível"}
+                            {bookingDetails.provider_address || "Endereço não disponível"}
                           </p>
                         </div>
                       </div>
@@ -200,7 +229,7 @@ const PaymentSuccess = () => {
                             Duração estimada
                           </p>
                           <p className="text-muted-foreground text-sm">
-                            {bookingDetails.service?.duration || 30} minutos
+                            {bookingDetails.service_duration || 30} minutos
                           </p>
                         </div>
                       </div>
