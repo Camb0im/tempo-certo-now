@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CheckCircle, Loader2, Calendar, MapPin, Clock } from "lucide-react";
 import Logo from "@/components/Logo";
 
-// Define proper types for the booking data
+// Define simpler types without circular references
 type TimeSlot = {
   id: string;
   start_time: string;
@@ -30,13 +30,13 @@ type Service = {
   id: string;
   name: string;
   duration: number;
-  service_providers: ServiceProvider;
+  service_provider: ServiceProvider;
 }
 
-type Booking = {
+type BookingDetails = {
   id: string;
-  time_slots: TimeSlot;
-  services: Service;
+  time_slot: TimeSlot;
+  service: Service;
   payment_status: string;
   status: string;
 }
@@ -47,7 +47,7 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [verifying, setVerifying] = useState(true);
-  const [bookingDetails, setBookingDetails] = useState<Booking | null>(null);
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
   
   useEffect(() => {
     async function verifyPayment() {
@@ -67,21 +67,23 @@ const PaymentSuccess = () => {
             variant: "default",
           });
           
-          // Fetch booking details - simplified query to avoid deep nesting
+          // Use a simpler query structure to avoid deep nesting issues
           const { data: bookingData, error: bookingError } = await supabase
             .from('bookings')
             .select(`
               id, 
               status,
               payment_status,
-              time_slots (id, start_time, end_time),
-              services (id, name, duration, service_providers (id, business_name, address))
+              time_slot:time_slots!inner(id, start_time, end_time, is_booked),
+              service:services!inner(id, name, duration, 
+                service_provider:service_providers!inner(id, business_name, address)
+              )
             `)
             .eq('stripe_session_id', sessionId)
             .single();
             
           if (!bookingError && bookingData) {
-            setBookingDetails(bookingData as Booking);
+            setBookingDetails(bookingData as unknown as BookingDetails);
           }
         } else {
           toast({
@@ -159,10 +161,10 @@ const PaymentSuccess = () => {
                   <div className="space-y-4">
                     <div className="text-center mb-4">
                       <h3 className="font-medium text-lg">
-                        {bookingDetails.services?.name}
+                        {bookingDetails.service?.name}
                       </h3>
                       <p className="text-muted-foreground">
-                        {bookingDetails.services?.service_providers?.business_name}
+                        {bookingDetails.service?.service_provider?.business_name}
                       </p>
                     </div>
                     
@@ -171,10 +173,10 @@ const PaymentSuccess = () => {
                         <Calendar className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium">
-                            {formatDate(bookingDetails.time_slots?.start_time)}
+                            {formatDate(bookingDetails.time_slot?.start_time)}
                           </p>
                           <p className="text-muted-foreground text-sm">
-                            {formatTime(bookingDetails.time_slots?.start_time)} - {formatTime(bookingDetails.time_slots?.end_time)}
+                            {formatTime(bookingDetails.time_slot?.start_time)} - {formatTime(bookingDetails.time_slot?.end_time)}
                           </p>
                         </div>
                       </div>
@@ -183,10 +185,10 @@ const PaymentSuccess = () => {
                         <MapPin className="h-5 w-5 mr-3 text-tc-blue flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-medium">
-                            {bookingDetails.services?.service_providers?.business_name}
+                            {bookingDetails.service?.service_provider?.business_name}
                           </p>
                           <p className="text-muted-foreground text-sm">
-                            {bookingDetails.services?.service_providers?.address || "Endereço não disponível"}
+                            {bookingDetails.service?.service_provider?.address || "Endereço não disponível"}
                           </p>
                         </div>
                       </div>
@@ -198,7 +200,7 @@ const PaymentSuccess = () => {
                             Duração estimada
                           </p>
                           <p className="text-muted-foreground text-sm">
-                            {bookingDetails.services?.duration || 30} minutos
+                            {bookingDetails.service?.duration || 30} minutos
                           </p>
                         </div>
                       </div>
