@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -117,18 +116,9 @@ const PaymentSuccess = () => {
             <>
               <CardHeader className="text-center pb-2">
                 <div className="flex justify-center mb-4">
-                  <motion.div
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 260,
-                      damping: 20
-                    }}
-                    className="bg-green-100 rounded-full p-3"
-                  >
+                  <div className="bg-green-100 rounded-full p-3 animate-scale-in">
                     <CheckCircle className="h-10 w-10 text-green-600" />
-                  </motion.div>
+                  </div>
                 </div>
                 <CardTitle className="text-2xl">Pagamento Confirmado!</CardTitle>
                 <CardDescription>
