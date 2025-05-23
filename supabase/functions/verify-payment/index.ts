@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,7 +23,6 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Create Supabase client with service role key to bypass RLS
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -43,7 +41,7 @@ serve(async (req) => {
       throw new Error("Session not found");
     }
 
-    // Update the booking payment status based on the session status
+    // Update the booking payment status
     let paymentStatus;
     if (session.payment_status === "paid") {
       paymentStatus = "paid";
@@ -53,7 +51,7 @@ serve(async (req) => {
       paymentStatus = "failed";
     }
 
-    // Update the booking in Supabase
+    // Update booking and get details in one query
     const { data: booking, error: updateError } = await supabaseClient
       .from("bookings")
       .update({
@@ -65,8 +63,21 @@ serve(async (req) => {
         id, 
         payment_status,
         status,
-        time_slot_id,
-        service_id
+        time_slots!inner(
+          id,
+          start_time,
+          end_time,
+          services!inner(
+            id,
+            name,
+            duration,
+            service_providers!inner(
+              id,
+              business_name,
+              address
+            )
+          )
+        )
       `)
       .single();
 
@@ -78,54 +89,21 @@ serve(async (req) => {
       throw new Error("Booking not found");
     }
 
-    // Get time slot details
-    const { data: timeSlot, error: timeSlotError } = await supabaseClient
-      .from('time_slots')
-      .select('id, start_time, end_time, is_booked, service_id')
-      .eq('id', booking.time_slot_id)
-      .single();
-      
-    if (timeSlotError) {
-      throw new Error("Failed to fetch time slot: " + timeSlotError.message);
-    }
+    // Flatten the response structure
+    const timeSlot = booking.time_slots;
+    const service = timeSlot.services;
+    const provider = service.service_providers;
 
-    // Get service details
-    const { data: service, error: serviceError } = await supabaseClient
-      .from('services')
-      .select('id, name, duration, provider_id')
-      .eq('id', booking.service_id)
-      .single();
-      
-    if (serviceError) {
-      throw new Error("Failed to fetch service: " + serviceError.message);
-    }
-
-    // Get provider details
-    const { data: provider, error: providerError } = await supabaseClient
-      .from('service_providers')
-      .select('id, business_name, address')
-      .eq('id', service.provider_id)
-      .single();
-      
-    if (providerError) {
-      throw new Error("Failed to fetch provider: " + providerError.message);
-    }
-
-    // Return flat booking details structure
     const bookingDetails = {
       id: booking.id,
       payment_status: booking.payment_status,
       status: booking.status,
-      time_slot_id: timeSlot.id,
-      time_slot_start_time: timeSlot.start_time,
-      time_slot_end_time: timeSlot.end_time,
-      time_slot_is_booked: timeSlot.is_booked,
-      service_id: service.id,
       service_name: service.name,
       service_duration: service.duration,
-      provider_id: provider.id,
       provider_business_name: provider.business_name,
-      provider_address: provider.address
+      provider_address: provider.address,
+      time_slot_start_time: timeSlot.start_time,
+      time_slot_end_time: timeSlot.end_time,
     };
 
     return new Response(
