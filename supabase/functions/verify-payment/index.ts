@@ -54,25 +54,85 @@ serve(async (req) => {
     }
 
     // Update the booking in Supabase
-    // Note: We're using the session metadata to store the booking ID in a real implementation
-    // For this example, we'll find the booking that has this session ID
-    const { error } = await supabaseClient
+    const { data: booking, error: updateError } = await supabaseClient
       .from("bookings")
       .update({
         payment_status: paymentStatus,
         updated_at: new Date().toISOString(),
-        stripe_session_id: sessionId, // Make sure this is stored
       })
-      .eq("stripe_session_id", sessionId);
+      .eq("stripe_session_id", sessionId)
+      .select(`
+        id, 
+        payment_status,
+        status,
+        time_slot_id,
+        service_id
+      `)
+      .single();
 
-    if (error) {
-      throw new Error("Failed to update booking");
+    if (updateError) {
+      throw new Error("Failed to update booking: " + updateError.message);
     }
+
+    if (!booking) {
+      throw new Error("Booking not found");
+    }
+
+    // Get time slot details
+    const { data: timeSlot, error: timeSlotError } = await supabaseClient
+      .from('time_slots')
+      .select('id, start_time, end_time, is_booked, service_id')
+      .eq('id', booking.time_slot_id)
+      .single();
+      
+    if (timeSlotError) {
+      throw new Error("Failed to fetch time slot: " + timeSlotError.message);
+    }
+
+    // Get service details
+    const { data: service, error: serviceError } = await supabaseClient
+      .from('services')
+      .select('id, name, duration, provider_id')
+      .eq('id', booking.service_id)
+      .single();
+      
+    if (serviceError) {
+      throw new Error("Failed to fetch service: " + serviceError.message);
+    }
+
+    // Get provider details
+    const { data: provider, error: providerError } = await supabaseClient
+      .from('service_providers')
+      .select('id, business_name, address')
+      .eq('id', service.provider_id)
+      .single();
+      
+    if (providerError) {
+      throw new Error("Failed to fetch provider: " + providerError.message);
+    }
+
+    // Return flat booking details structure
+    const bookingDetails = {
+      id: booking.id,
+      payment_status: booking.payment_status,
+      status: booking.status,
+      time_slot_id: timeSlot.id,
+      time_slot_start_time: timeSlot.start_time,
+      time_slot_end_time: timeSlot.end_time,
+      time_slot_is_booked: timeSlot.is_booked,
+      service_id: service.id,
+      service_name: service.name,
+      service_duration: service.duration,
+      provider_id: provider.id,
+      provider_business_name: provider.business_name,
+      provider_address: provider.address
+    };
 
     return new Response(
       JSON.stringify({
         success: true,
         paymentStatus,
+        bookingDetails
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -13,20 +13,20 @@ import { CheckCircle, Loader2, Calendar, MapPin, Clock } from "lucide-react";
 import Logo from "@/components/Logo";
 
 // Define flat types to avoid deep nesting and circular references
-type BookingDetails = {
+interface BookingDetails {
   id: string;
   payment_status: string;
   status: string;
-  time_slot_id?: string;
-  time_slot_start_time?: string;
-  time_slot_end_time?: string;
-  time_slot_is_booked?: boolean;
-  service_id?: string;
-  service_name?: string;
-  service_duration?: number;
-  provider_id?: string;
-  provider_business_name?: string;
-  provider_address?: string | null;
+  time_slot_id: string;
+  time_slot_start_time: string;
+  time_slot_end_time: string;
+  time_slot_is_booked: boolean;
+  service_id: string;
+  service_name: string;
+  service_duration: number;
+  provider_id: string;
+  provider_business_name: string;
+  provider_address: string | null;
 }
 
 const PaymentSuccess = () => {
@@ -46,7 +46,15 @@ const PaymentSuccess = () => {
           body: { sessionId },
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Error from verify-payment function:", error);
+          toast({
+            title: "Erro ao verificar pagamento",
+            description: "Houve um problema ao confirmar seu pagamento.",
+            variant: "destructive",
+          });
+          return;
+        }
         
         if (data.success) {
           toast({
@@ -55,64 +63,9 @@ const PaymentSuccess = () => {
             variant: "default",
           });
           
-          // Use flat query with explicit column selection to avoid deep nesting
-          const { data: booking, error: bookingError } = await supabase
-            .from('bookings')
-            .select(`
-              id, status, payment_status,
-              time_slot_id
-            `)
-            .eq('stripe_session_id', sessionId)
-            .single();
-            
-          if (bookingError) {
-            console.error("Error fetching booking:", bookingError);
-            return;
-          }
-          
-          // If we found a booking, get the related data separately to avoid deep nesting
-          if (booking) {
-            // Get time slot details
-            const { data: timeSlot } = await supabase
-              .from('time_slots')
-              .select('id, start_time, end_time, is_booked, service_id')
-              .eq('id', booking.time_slot_id)
-              .single();
-              
-            // Get service details
-            if (timeSlot?.service_id) {
-              const { data: service } = await supabase
-                .from('services')
-                .select('id, name, duration, provider_id')
-                .eq('id', timeSlot.service_id)
-                .single();
-                
-              // Get provider details
-              if (service?.provider_id) {
-                const { data: provider } = await supabase
-                  .from('service_providers')
-                  .select('id, business_name, address')
-                  .eq('id', service.provider_id)
-                  .single();
-                  
-                // Combine all the data into a flat structure
-                setBookingDetails({
-                  id: booking.id,
-                  status: booking.status,
-                  payment_status: booking.payment_status,
-                  time_slot_id: timeSlot?.id,
-                  time_slot_start_time: timeSlot?.start_time,
-                  time_slot_end_time: timeSlot?.end_time,
-                  time_slot_is_booked: timeSlot?.is_booked,
-                  service_id: service?.id,
-                  service_name: service?.name,
-                  service_duration: service?.duration,
-                  provider_id: provider?.id,
-                  provider_business_name: provider?.business_name,
-                  provider_address: provider?.address
-                });
-              }
-            }
+          // Set the booking details directly from the edge function response
+          if (data.bookingDetails) {
+            setBookingDetails(data.bookingDetails);
           }
         } else {
           toast({
