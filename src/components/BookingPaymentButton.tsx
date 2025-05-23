@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer";
 import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "@/hooks/use-mobile";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface BookingPaymentButtonProps {
   bookingId: string;
