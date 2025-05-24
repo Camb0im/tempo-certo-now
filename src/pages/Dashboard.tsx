@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, ClockIcon, MapPinIcon, CreditCard, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import UserAvatar from "@/components/UserAvatar";
-import Logo from "@/components/Logo";
+import UserProfileAvatar from "@/components/UserProfileAvatar";
+import TempoCertoLogo from "@/components/TempoCertoLogo";
 
 const Dashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -101,10 +100,10 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <Logo />
+          <TempoCertoLogo />
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
-              <UserAvatar 
+              <UserProfileAvatar 
                 src={profile?.avatar_url} 
                 name={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
                 size="sm"
@@ -244,7 +243,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                  <UserAvatar 
+                  <UserProfileAvatar 
                     src={profile?.avatar_url} 
                     name={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
                     size="xl"

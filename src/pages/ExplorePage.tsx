@@ -2,17 +2,9 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Calendar, MapPin, StarIcon, Filter } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Search, Calendar, MapPin, Filter } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -20,6 +12,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import SearchBar from "@/components/SearchBar";
+import CategorySelect from "@/components/CategorySelect";
+import { categories } from "@/data/categories";
 
 // Dados de exemplo para serviços
 const servicesData = [
@@ -27,7 +22,7 @@ const servicesData = [
     id: 1,
     name: "Corte de Cabelo",
     provider: "Barbearia Vintage",
-    category: "Barbearias",
+    category: "barbearias",
     rating: 4.8,
     reviews: 45,
     price: 45,
@@ -38,7 +33,7 @@ const servicesData = [
     id: 2,
     name: "Mesa para Jantar",
     provider: "Restaurante Italiano",
-    category: "Restaurantes",
+    category: "restaurantes",
     rating: 4.5,
     reviews: 120,
     price: 60,
@@ -93,7 +88,7 @@ const servicesData = [
 
 const ExplorePage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("all");
   const [filteredServices, setFilteredServices] = useState(servicesData);
 
   const handleSearch = () => {
@@ -106,7 +101,7 @@ const ExplorePage = () => {
       );
     }
     
-    if (category) {
+    if (category && category !== "all") {
       filtered = filtered.filter(service => 
         service.category === category
       );
@@ -115,43 +110,51 @@ const ExplorePage = () => {
     setFilteredServices(filtered);
   };
 
+  const searchSuggestions = [
+    "Corte de cabelo masculino",
+    "Mesa para 4 pessoas",
+    "Café da manhã especial", 
+    "Consulta médica",
+    "Manicure e pedicure"
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 sm:px-6 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Explore os Serviços</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Encontre os melhores serviços e economize seu tempo
           </p>
+          <div className="text-sm text-gray-600">
+            <span className="font-medium">Sugestões populares:</span>
+            {searchSuggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                className="ml-2 text-tc-blue hover:underline"
+                onClick={() => setSearchTerm(suggestion)}
+              >
+                {suggestion}
+                {index < searchSuggestions.length - 1 ? "," : ""}
+              </button>
+            ))}
+          </div>
         </div>
         
         <div className="flex flex-wrap gap-4 mb-8">
-          <div className="relative flex-grow">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Buscar serviços..."
-              className="pl-9 w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+          <SearchBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            onSearch={handleSearch}
+            placeholder="O que você está procurando?"
+          />
           
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Todas categorias</SelectItem>
-              <SelectItem value="Restaurantes">Restaurantes</SelectItem>
-              <SelectItem value="Barbearias">Barbearias</SelectItem>
-              <SelectItem value="Cafés">Cafés</SelectItem>
-              <SelectItem value="Beleza">Beleza</SelectItem>
-              <SelectItem value="Saúde">Saúde</SelectItem>
-              <SelectItem value="Pet">Pet</SelectItem>
-            </SelectContent>
-          </Select>
+          <CategorySelect
+            value={category}
+            onValueChange={setCategory}
+            categories={categories}
+          />
           
           <Sheet>
             <SheetTrigger asChild>
@@ -192,7 +195,9 @@ const ExplorePage = () => {
             </SheetContent>
           </Sheet>
           
-          <Button onClick={handleSearch}>Buscar</Button>
+          <Button onClick={handleSearch} className="bg-tc-blue hover:bg-tc-blue-dark">
+            Buscar
+          </Button>
         </div>
 
         <div className="hidden lg:block lg:w-1/4 float-left mr-6 mb-6">

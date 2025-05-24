@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import Logo from "@/components/Logo";
+import TempoCertoLogo from "@/components/TempoCertoLogo";
 import {
   Menu,
   X,
@@ -29,6 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { categories } from "@/data/categories";
 
 const serviceCategories = [
   { name: "Restaurantes", icon: <Utensils className="h-4 w-4 mr-2" /> },
@@ -55,20 +55,20 @@ const Navbar = () => {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>
-                  <Logo size="lg" />
+                  <TempoCertoLogo size="lg" />
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-6">
                 <div className="space-y-3">
                   <h3 className="text-sm font-medium text-muted-foreground">Categorias</h3>
                   <div className="space-y-2">
-                    {serviceCategories.map((category) => (
+                    {categories.slice(0, 6).map((category) => (
                       <Link
-                        key={category.name}
-                        to={`/categoria/${category.name.toLowerCase()}`}
+                        key={category.id}
+                        to={`/categoria/${category.id}`}
                         className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
                       >
-                        {category.icon}
+                        <span className="mr-2">{category.icon}</span>
                         {category.name}
                       </Link>
                     ))}
@@ -101,7 +101,7 @@ const Navbar = () => {
             </SheetContent>
           </Sheet>
           
-          <Logo />
+          <TempoCertoLogo />
           
           <div className="hidden md:flex items-center ml-6">
             <DropdownMenu>
@@ -110,14 +110,14 @@ const Navbar = () => {
                   Categorias <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {serviceCategories.map((category) => (
-                  <DropdownMenuItem key={category.name}>
+              <DropdownMenuContent className="w-56">
+                {categories.slice(0, 8).map((category) => (
+                  <DropdownMenuItem key={category.id}>
                     <Link
-                      to={`/categoria/${category.name.toLowerCase()}`}
+                      to={`/categoria/${category.id}`}
                       className="flex items-center w-full"
                     >
-                      {category.icon}
+                      <span className="mr-2">{category.icon}</span>
                       {category.name}
                     </Link>
                   </DropdownMenuItem>
