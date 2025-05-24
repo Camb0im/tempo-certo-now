@@ -22,46 +22,50 @@ const ExplorePage = () => {
   } = useExploreFilters();
 
   const handleSearch = () => {
-    // A busca é realizada automaticamente através do useMemo no hook
     console.log("Busca realizada");
   };
 
   const handleApplyFilters = () => {
-    // Os filtros são aplicados automaticamente através do useMemo no hook
     console.log("Filtros aplicados");
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-tc-gray-50 dark:bg-tc-dark-bg">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 sm:px-6 py-8">
-        <ExploreHeader
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          onSearch={handleSearch}
-          selectedCategory={selectedCategory}
-          onCategorySelect={setSelectedCategory}
-          filters={filters}
-          onFiltersChange={setFilters}
-          onApplyFilters={handleApplyFilters}
-        />
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 sm:px-6 py-8">
+          <ExploreHeader
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            onSearch={handleSearch}
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+            filters={filters}
+            onFiltersChange={setFilters}
+            onApplyFilters={handleApplyFilters}
+          />
 
-        <div className="flex gap-6">
-          <div className="hidden lg:block">
-            <ExploreFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              onApplyFilters={handleApplyFilters}
-              isCollapsed={filtersCollapsed}
-              onToggleCollapse={() => setFiltersCollapsed(!filtersCollapsed)}
-            />
-          </div>
-          
-          <div className="flex-1">
-            <ServiceGrid 
-              services={filteredServices} 
-              onClearFilters={clearFilters}
-            />
+          <div className="flex gap-8 mt-8">
+            {/* Sidebar com filtros */}
+            <div className={`transition-all duration-300 ${filtersCollapsed ? 'w-16' : 'w-80'} hidden lg:block`}>
+              <div className="sticky top-24">
+                <ExploreFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onApplyFilters={handleApplyFilters}
+                  isCollapsed={filtersCollapsed}
+                  onToggleCollapse={() => setFiltersCollapsed(!filtersCollapsed)}
+                />
+              </div>
+            </div>
+            
+            {/* Grid de serviços */}
+            <div className="flex-1 min-w-0">
+              <ServiceGrid 
+                services={filteredServices} 
+                onClearFilters={clearFilters}
+              />
+            </div>
           </div>
         </div>
       </main>
