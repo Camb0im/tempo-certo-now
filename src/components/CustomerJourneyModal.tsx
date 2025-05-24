@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,8 @@ import {
   User
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useBookingFlow } from "@/hooks/useBookingFlow";
 
 interface CustomerJourneyModalProps {
   isOpen: boolean;
@@ -39,6 +40,8 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
     phone: ''
   });
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { createBooking, confirmBooking, loading } = useBookingFlow();
 
   const steps = [
     { id: 'search', title: 'Buscar', icon: Search },
@@ -47,6 +50,8 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
     { id: 'payment', title: 'Pagamento', icon: CreditCard },
     { id: 'confirmation', title: 'Confirmação', icon: CheckCircle }
   ];
+
+  // ... keep existing code (mockServices array)
 
   const mockServices = [
     {
@@ -82,11 +87,32 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
     setCurrentStep('book');
   };
 
-  const handleBookingSubmit = () => {
-    setCurrentStep('payment');
+  const handleBookingSubmit = async () => {
+    if (!user) {
+      onClose();
+      navigate('/login', { state: { from: '/explore' } });
+      return;
+    }
+
+    if (!bookingData.date || !bookingData.time) {
+      return;
+    }
+
+    const booking = await createBooking({
+      serviceId: selectedService.id.toString(),
+      providerId: 'provider-demo',
+      date: bookingData.date,
+      time: bookingData.time,
+      notes: bookingData.notes,
+      totalAmount: selectedService.price
+    });
+
+    if (booking) {
+      setCurrentStep('payment');
+    }
   };
 
-  const handlePaymentComplete = () => {
+  const handlePaymentComplete = async () => {
     setCurrentStep('confirmation');
   };
 
@@ -147,6 +173,13 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
             <div className="text-center space-y-4">
               <h3 className="text-hierarchy-2">Agendar {selectedService?.name}</h3>
               <p className="text-body">{selectedService?.provider}</p>
+              {!user && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-700">
+                    Você precisará fazer login para continuar com o agendamento.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -174,48 +207,52 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name" className="text-sm font-medium">Nome completo</Label>
-                  <Input 
-                    id="name"
-                    placeholder="Seu nome"
-                    className="minimal-input mt-2"
-                    value={bookingData.name}
-                    onChange={(e) => setBookingData(prev => ({ ...prev, name: e.target.value }))}
-                  />
+              {user && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name" className="text-sm font-medium">Nome completo</Label>
+                    <Input 
+                      id="name"
+                      placeholder="Seu nome"
+                      className="minimal-input mt-2"
+                      value={bookingData.name}
+                      onChange={(e) => setBookingData(prev => ({ ...prev, name: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="phone" className="text-sm font-medium">Telefone</Label>
+                    <Input 
+                      id="phone"
+                      placeholder="(11) 99999-9999"
+                      className="minimal-input mt-2"
+                      value={bookingData.phone}
+                      onChange={(e) => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
+                    />
+                  </div>
                 </div>
-                
-                <div>
-                  <Label htmlFor="phone" className="text-sm font-medium">Telefone</Label>
-                  <Input 
-                    id="phone"
-                    placeholder="(11) 99999-9999"
-                    className="minimal-input mt-2"
-                    value={bookingData.phone}
-                    onChange={(e) => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
-                  />
-                </div>
-              </div>
+              )}
             </div>
 
-            <div>
-              <Label htmlFor="notes" className="text-sm font-medium">Observações (opcional)</Label>
-              <Textarea 
-                id="notes"
-                placeholder="Alguma informação adicional..."
-                className="minimal-input mt-2"
-                value={bookingData.notes}
-                onChange={(e) => setBookingData(prev => ({ ...prev, notes: e.target.value }))}
-              />
-            </div>
+            {user && (
+              <div>
+                <Label htmlFor="notes" className="text-sm font-medium">Observações (opcional)</Label>
+                <Textarea 
+                  id="notes"
+                  placeholder="Alguma informação adicional..."
+                  className="minimal-input mt-2"
+                  value={bookingData.notes}
+                  onChange={(e) => setBookingData(prev => ({ ...prev, notes: e.target.value }))}
+                />
+              </div>
+            )}
 
             <Button 
               onClick={handleBookingSubmit}
               className="w-full minimal-button bg-tc-blue hover:bg-tc-blue-dark text-white"
-              disabled={!bookingData.date || !bookingData.time || !bookingData.name}
+              disabled={!bookingData.date || !bookingData.time || loading}
             >
-              Continuar para Pagamento
+              {loading ? "Processando..." : user ? "Continuar para Pagamento" : "Fazer Login para Continuar"}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -256,9 +293,10 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
             <Button 
               onClick={handlePaymentComplete}
               className="w-full minimal-button bg-tc-green hover:bg-tc-green-dark text-white"
+              disabled={loading}
             >
               <CreditCard className="h-4 w-4 mr-2" />
-              Pagar Agora
+              {loading ? "Processando..." : "Pagar Agora"}
             </Button>
           </div>
         );

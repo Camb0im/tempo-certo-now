@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -28,7 +27,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import UserAvatar from "@/components/UserAvatar";
-import BookingPaymentButton from "@/components/BookingPaymentButton";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useBookingFlow } from "@/hooks/useBookingFlow";
 
 // Dados de exemplo
 const serviceDetails = {
@@ -104,10 +105,15 @@ const serviceDetails = {
 };
 
 const ServiceDetailsPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { createBooking, confirmBooking, loading: bookingLoading } = useBookingFlow();
+  
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [bookingStep, setBookingStep] = useState(1); // 1: Selecionar data, 2: Resumo e confirmação
+  const [bookingStep, setBookingStep] = useState(1);
+  const [bookingId, setBookingId] = useState<string | null>(null);
 
   const handleDateNavigation = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && selectedDate > 0) {
@@ -121,13 +127,47 @@ const ServiceDetailsPage = () => {
     setSelectedSlot(slotId);
   };
 
-  const handleNextStep = () => {
-    setBookingStep(2);
+  const handleNextStep = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: window.location.pathname } });
+      return;
+    }
+
+    if (bookingStep === 1 && selectedSlot) {
+      // Criar agendamento
+      const selectedSlotDetails = serviceDetails.availableDates
+        .flatMap(date => date.slots)
+        .find(slot => slot.id === selectedSlot);
+      
+      const selectedDateDetails = serviceDetails.availableDates[selectedDate];
+      
+      if (selectedSlotDetails && selectedDateDetails) {
+        const booking = await createBooking({
+          serviceId: serviceDetails.id,
+          providerId: serviceDetails.provider.id,
+          date: selectedDateDetails.date,
+          time: selectedSlotDetails.time,
+          totalAmount: serviceDetails.price * 1.05 // Incluindo taxa
+        });
+        
+        if (booking) {
+          setBookingId(booking.id);
+          setBookingStep(2);
+        }
+      }
+    }
+  };
+
+  const handleConfirmBooking = async () => {
+    if (bookingId) {
+      await confirmBooking(bookingId);
+    }
   };
 
   const handlePreviousStep = () => {
     setBookingStep(1);
     setSelectedSlot(null);
+    setBookingId(null);
   };
 
   // Formatar a data
@@ -316,8 +356,9 @@ const ServiceDetailsPage = () => {
                       <Button 
                         className="w-full mt-4" 
                         onClick={handleNextStep}
+                        disabled={bookingLoading}
                       >
-                        Continuar
+                        {bookingLoading ? "Criando agendamento..." : "Continuar"}
                       </Button>
                     )}
                   </div>
@@ -366,18 +407,19 @@ const ServiceDetailsPage = () => {
                       </div>
                       
                       <div className="space-y-3 pt-2">
-                        {/* Exemplo de botão. O botão real usaria o ID de uma reserva criada */}
-                        <BookingPaymentButton 
-                          bookingId="sample-booking-id" 
-                          bookingAmount={Math.round(serviceDetails.price * 105)} 
-                          serviceName={serviceDetails.name}
-                          className="w-full"
-                        />
+                        <Button 
+                          className="w-full bg-tc-green hover:bg-tc-green-dark text-white"
+                          onClick={handleConfirmBooking}
+                          disabled={bookingLoading}
+                        >
+                          {bookingLoading ? "Confirmando..." : "Confirmar Agendamento"}
+                        </Button>
                         
                         <Button 
                           variant="outline" 
                           className="w-full"
                           onClick={handlePreviousStep}
+                          disabled={bookingLoading}
                         >
                           Voltar
                         </Button>

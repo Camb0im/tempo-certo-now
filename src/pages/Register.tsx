@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +35,10 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 const Register = () => {
   const { signUp, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Verificar se veio de um redirecionamento
+  const from = (location.state as any)?.from;
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -60,10 +64,18 @@ const Register = () => {
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
               Crie sua conta
             </h2>
+            {from && (
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  Você precisa de uma conta para continuar com o agendamento.
+                </p>
+              </div>
+            )}
             <p className="mt-2 text-sm text-gray-600">
               Ou{" "}
               <Link
                 to="/login"
+                state={{ from }}
                 className="font-medium text-tc-blue hover:text-tc-blue-dark"
               >
                 faça login se já tem uma conta

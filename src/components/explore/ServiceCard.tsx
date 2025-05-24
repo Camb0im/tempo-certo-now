@@ -3,6 +3,9 @@ import React, { memo } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Star } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface ServiceCardProps {
   service: {
@@ -32,6 +35,24 @@ const StarRating = memo(({ rating }: { rating: number }) => (
 ));
 
 const ServiceCard = memo(({ service }: ServiceCardProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleBookingClick = () => {
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Você precisa fazer login para agendar um serviço.",
+      });
+      navigate('/login', { state: { from: `/service/${service.id}` } });
+      return;
+    }
+    
+    // Se usuário está logado, redireciona para página de detalhes do serviço
+    navigate(`/service/${service.id}`);
+  };
+
   return (
     <Card className="minimal-card hover:shadow-card transition-all duration-300 hover:scale-[1.02] group overflow-hidden">
       <div className="h-48 bg-tc-gray-100 relative overflow-hidden">
@@ -90,7 +111,10 @@ const ServiceCard = memo(({ service }: ServiceCardProps) => {
       </CardContent>
       
       <CardFooter className="pt-0">
-        <Button className="w-full minimal-button bg-tc-blue hover:bg-tc-blue-dark text-white">
+        <Button 
+          onClick={handleBookingClick}
+          className="w-full minimal-button bg-tc-blue hover:bg-tc-blue-dark text-white"
+        >
           Agendar Agora
         </Button>
       </CardFooter>

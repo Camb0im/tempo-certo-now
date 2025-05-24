@@ -1,8 +1,7 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate, useLocation } from "react-router-dom";
 import type { Session, User } from '@supabase/supabase-js';
 
 type AuthContextType = {
@@ -25,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Verifica se há uma sessão ativa
@@ -93,7 +93,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: "Bem-vindo de volta ao TempoCerto!",
       });
       
-      navigate('/dashboard');
+      // Verificar se há um redirect após login
+      const from = (location.state as any)?.from || '/dashboard';
+      navigate(from);
     } catch (error: any) {
       toast({
         title: "Erro no login",
@@ -126,7 +128,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: "Sua conta foi criada. Faça login para continuar.",
       });
       
-      navigate('/login');
+      // Verificar se há um redirect após cadastro
+      const from = (location.state as any)?.from;
+      if (from) {
+        navigate('/login', { state: { from } });
+      } else {
+        navigate('/login');
+      }
     } catch (error: any) {
       toast({
         title: "Erro no cadastro",
