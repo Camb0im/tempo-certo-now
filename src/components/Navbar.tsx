@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,10 +10,6 @@ import {
   UserCircle,
   Calendar,
   Store,
-  Scissors,
-  Utensils,
-  Coffee,
-  MapPin,
   ChevronDown,
 } from "lucide-react";
 import {
@@ -28,15 +25,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { categories } from "@/data/categories";
-
-const serviceCategories = [
-  { name: "Restaurantes", icon: <Utensils className="h-4 w-4 mr-2" /> },
-  { name: "Barbearias", icon: <Scissors className="h-4 w-4 mr-2" /> },
-  { name: "Cafés", icon: <Coffee className="h-4 w-4 mr-2" /> },
-  { name: "Lojas", icon: <Store className="h-4 w-4 mr-2" /> },
-  { name: "Passeios", icon: <MapPin className="h-4 w-4 mr-2" /> },
-];
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,23 +48,14 @@ const Navbar = () => {
               </SheetHeader>
               <div className="mt-6 space-y-6">
                 <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground">Categorias</h3>
-                  <div className="space-y-2">
-                    {categories.slice(0, 6).map((category) => (
-                      <Link
-                        key={category.id}
-                        to={`/categoria/${category.id}`}
-                        className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
-                      >
-                        <span className="mr-2">{category.icon}</span>
-                        {category.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-3">
                   <h3 className="text-sm font-medium text-muted-foreground">Menu</h3>
                   <div className="space-y-2">
+                    <Link
+                      to="/explore"
+                      className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
+                    >
+                      Explorar Serviços
+                    </Link>
                     <Link
                       to="/como-funciona"
                       className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
@@ -102,32 +81,12 @@ const Navbar = () => {
           </Sheet>
           
           <TempoCertoLogo />
-          
-          <div className="hidden md:flex items-center ml-6">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-gray-600 hover:text-tc-blue transition-colors">
-                  Categorias <ChevronDown className="h-4 w-4 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                {categories.slice(0, 8).map((category) => (
-                  <DropdownMenuItem key={category.id}>
-                    <Link
-                      to={`/categoria/${category.id}`}
-                      className="flex items-center w-full"
-                    >
-                      <span className="mr-2">{category.icon}</span>
-                      {category.name}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
         
         <div className="hidden md:flex items-center gap-6">
+          <Link to="/explore" className="text-gray-600 hover:text-tc-blue transition-colors">
+            Explorar Serviços
+          </Link>
           <Link to="/como-funciona" className="text-gray-600 hover:text-tc-blue transition-colors">
             Como funciona
           </Link>
