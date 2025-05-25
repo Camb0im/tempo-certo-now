@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,7 +12,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Info,
-  Check,
 } from "lucide-react";
 import {
   Tabs,
@@ -31,7 +31,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useBookingFlow } from "@/hooks/useBookingFlow";
 
-// Dados de exemplo
+// Dados de exemplo - incluindo business logo
 const serviceDetails = {
   id: "service-123",
   name: "Corte de Cabelo",
@@ -39,6 +39,7 @@ const serviceDetails = {
     id: "provider-456",
     name: "Barbearia Vintage",
     image: "/placeholder.svg",
+    businessLogo: "/placeholder.svg", // Logo do empreendimento
     address: "Rua Augusta, 1500, Consolação",
     city: "São Paulo",
     rating: 4.8,
@@ -111,7 +112,6 @@ const ServiceDetailsPage = () => {
   
   const [selectedDate, setSelectedDate] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingId, setBookingId] = useState<string | null>(null);
 
@@ -134,26 +134,16 @@ const ServiceDetailsPage = () => {
     }
 
     if (bookingStep === 1 && selectedSlot) {
-      // Criar agendamento
-      const selectedSlotDetails = serviceDetails.availableDates
-        .flatMap(date => date.slots)
-        .find(slot => slot.id === selectedSlot);
+      // Criar agendamento usando os campos corretos
+      const booking = await createBooking({
+        serviceId: serviceDetails.id,
+        timeSlotId: selectedSlot,
+        paymentAmount: serviceDetails.price * 1.05 // Incluindo taxa
+      });
       
-      const selectedDateDetails = serviceDetails.availableDates[selectedDate];
-      
-      if (selectedSlotDetails && selectedDateDetails) {
-        const booking = await createBooking({
-          serviceId: serviceDetails.id,
-          providerId: serviceDetails.provider.id,
-          date: selectedDateDetails.date,
-          time: selectedSlotDetails.time,
-          totalAmount: serviceDetails.price * 1.05 // Incluindo taxa
-        });
-        
-        if (booking) {
-          setBookingId(booking.id);
-          setBookingStep(2);
-        }
+      if (booking) {
+        setBookingId(booking.id);
+        setBookingStep(2);
       }
     }
   };
@@ -186,12 +176,12 @@ const ServiceDetailsPage = () => {
     : null;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 sm:px-6 py-8">
         <Button 
           variant="ghost" 
-          className="mb-4 flex items-center hover:bg-transparent hover:text-tc-blue pl-0"
+          className="mb-4 flex items-center hover:bg-transparent hover:text-blue-600 dark:hover:text-blue-400 pl-0 text-gray-700 dark:text-gray-300"
           onClick={() => window.history.back()}
         >
           <ChevronLeft className="h-5 w-5 mr-1" />
@@ -205,7 +195,7 @@ const ServiceDetailsPage = () => {
               <CarouselContent>
                 {serviceDetails.images.map((image, index) => (
                   <CarouselItem key={index}>
-                    <div className="h-64 sm:h-80 md:h-96 overflow-hidden rounded-lg">
+                    <div className="h-64 sm:h-80 md:h-96 overflow-hidden rounded-xl">
                       <img 
                         src={image} 
                         alt={`${serviceDetails.name} - imagem ${index + 1}`}
@@ -220,45 +210,57 @@ const ServiceDetailsPage = () => {
             </Carousel>
 
             <div>
-              <h1 className="text-3xl font-bold mb-2">{serviceDetails.name}</h1>
+              <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">{serviceDetails.name}</h1>
               <div className="flex items-center mb-4">
-                <div className="mr-3">
-                  <span className="inline-block bg-yellow-100 p-1 rounded">
-                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  </span>
-                  <span className="ml-1 font-medium">{serviceDetails.provider.rating}</span>
-                  <span className="text-sm text-gray-500">({serviceDetails.provider.reviews} avaliações)</span>
+                <div className="mr-3 flex items-center">
+                  {/* Logo do empreendimento */}
+                  {serviceDetails.provider.businessLogo && (
+                    <div className="w-10 h-10 mr-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-1.5">
+                      <img 
+                        src={serviceDetails.provider.businessLogo} 
+                        alt={`Logo ${serviceDetails.provider.name}`}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <span className="inline-block bg-yellow-100 dark:bg-yellow-900 p-1 rounded mr-2">
+                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{serviceDetails.provider.rating}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">({serviceDetails.provider.reviews} avaliações)</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-gray-500">
+                <div className="flex items-center text-gray-500 dark:text-gray-400">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span className="text-sm">{serviceDetails.provider.address}</span>
                 </div>
               </div>
 
               <div className="flex items-center mb-6">
-                <div className="bg-tc-blue/10 text-tc-blue rounded-full px-3 py-1 text-sm font-medium flex items-center mr-2">
+                <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl px-3 py-1 text-sm font-medium flex items-center mr-2">
                   <Clock className="h-4 w-4 mr-1" />
                   {serviceDetails.duration} minutos
                 </div>
-                <div className="text-lg font-bold">
+                <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
                   R$ {serviceDetails.price.toFixed(2)}
                 </div>
               </div>
 
               <Tabs defaultValue="info">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="info">Informações</TabsTrigger>
-                  <TabsTrigger value="reviews">Avaliações</TabsTrigger>
+                <TabsList className="mb-4 bg-gray-100 dark:bg-gray-800">
+                  <TabsTrigger value="info" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">Informações</TabsTrigger>
+                  <TabsTrigger value="reviews" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">Avaliações</TabsTrigger>
                 </TabsList>
                 <TabsContent value="info" className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Sobre o serviço</h3>
-                    <p className="text-gray-700">{serviceDetails.description}</p>
+                    <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100">Sobre o serviço</h3>
+                    <p className="text-gray-700 dark:text-gray-300">{serviceDetails.description}</p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Sobre o local</h3>
+                    <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100">Sobre o local</h3>
                     <div className="flex items-start space-x-3">
-                      <div className="h-16 w-16 rounded-lg overflow-hidden">
+                      <div className="h-16 w-16 rounded-xl overflow-hidden">
                         <img 
                           src={serviceDetails.provider.image} 
                           alt={serviceDetails.provider.name}
@@ -266,9 +268,9 @@ const ServiceDetailsPage = () => {
                         />
                       </div>
                       <div>
-                        <h4 className="font-medium">{serviceDetails.provider.name}</h4>
-                        <p className="text-sm text-gray-500">{serviceDetails.provider.address}</p>
-                        <p className="text-sm text-gray-500">{serviceDetails.provider.city}</p>
+                        <h4 className="font-medium text-gray-900 dark:text-gray-100">{serviceDetails.provider.name}</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{serviceDetails.provider.address}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{serviceDetails.provider.city}</p>
                       </div>
                     </div>
                   </div>
@@ -310,11 +312,11 @@ const ServiceDetailsPage = () => {
 
           {/* Coluna da direita */}
           <div className="md:col-span-2">
-            <Card>
+            <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
               <CardContent className="p-6">
                 {bookingStep === 1 ? (
                   <div className="space-y-4">
-                    <h2 className="text-xl font-bold mb-4">Agende seu horário</h2>
+                    <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Agende seu horário</h2>
                     
                     <div className="flex items-center justify-between mb-2">
                       <Button 
@@ -322,10 +324,11 @@ const ServiceDetailsPage = () => {
                         size="icon"
                         onClick={() => handleDateNavigation('prev')}
                         disabled={selectedDate === 0}
+                        className="rounded-lg border-gray-200 dark:border-gray-700"
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
-                      <span className="font-medium">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
                         {formatDate(serviceDetails.availableDates[selectedDate].date)}
                       </span>
                       <Button 
@@ -333,6 +336,7 @@ const ServiceDetailsPage = () => {
                         size="icon"
                         onClick={() => handleDateNavigation('next')}
                         disabled={selectedDate === serviceDetails.availableDates.length - 1}
+                        className="rounded-lg border-gray-200 dark:border-gray-700"
                       >
                         <ChevronRight className="h-4 w-4" />
                       </Button>
@@ -343,7 +347,13 @@ const ServiceDetailsPage = () => {
                         <Button
                           key={slot.id}
                           variant={selectedSlot === slot.id ? "default" : "outline"}
-                          className={slot.available ? "" : "opacity-50 cursor-not-allowed"}
+                          className={`rounded-lg h-11 ${
+                            selectedSlot === slot.id 
+                              ? "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" 
+                              : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          } ${
+                            slot.available ? "" : "opacity-50 cursor-not-allowed"
+                          }`}
                           disabled={!slot.available}
                           onClick={() => handleSlotSelect(slot.id)}
                         >
@@ -354,7 +364,7 @@ const ServiceDetailsPage = () => {
                     
                     {selectedSlot && (
                       <Button 
-                        className="w-full mt-4" 
+                        className="w-full mt-4 h-11 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-xl font-medium" 
                         onClick={handleNextStep}
                         disabled={bookingLoading}
                       >
@@ -364,41 +374,41 @@ const ServiceDetailsPage = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <h2 className="text-xl font-bold mb-4">Confirme sua reserva</h2>
+                    <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Confirme sua reserva</h2>
                     
                     <div className="space-y-3">
-                      <div className="bg-muted/50 p-3 rounded">
+                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-xl">
                         <div className="flex items-center text-sm mb-1">
-                          <Calendar className="h-4 w-4 mr-2 text-tc-blue" />
-                          <span className="font-medium">
+                          <Calendar className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
                             {formatDate(serviceDetails.availableDates[selectedDate].date)}
                           </span>
                         </div>
                         <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-tc-blue" />
-                          <span className="font-medium">
+                          <Clock className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
                             {selectedSlotDetails?.time} - Duração: {serviceDetails.duration} min
                           </span>
                         </div>
                       </div>
                       
-                      <div className="border-t border-b py-3">
+                      <div className="border-t border-b border-gray-200 dark:border-gray-700 py-3">
                         <div className="flex justify-between items-center">
-                          <span>{serviceDetails.name}</span>
-                          <span className="font-medium">R$ {serviceDetails.price.toFixed(2)}</span>
+                          <span className="text-gray-900 dark:text-gray-100">{serviceDetails.name}</span>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">R$ {serviceDetails.price.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between items-center text-sm text-gray-500 mt-1">
+                        <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 mt-1">
                           <span>Taxa de serviço</span>
                           <span>R$ {(serviceDetails.price * 0.05).toFixed(2)}</span>
                         </div>
                       </div>
                       
-                      <div className="flex justify-between items-center font-bold">
+                      <div className="flex justify-between items-center font-bold text-gray-900 dark:text-gray-100">
                         <span>Total</span>
                         <span>R$ {(serviceDetails.price * 1.05).toFixed(2)}</span>
                       </div>
                       
-                      <div className="bg-green-50 text-green-700 p-3 rounded text-sm flex items-start">
+                      <div className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-xl text-sm flex items-start">
                         <Info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
                         <p>
                           Ao confirmar sua reserva, você concorda com os 
@@ -408,7 +418,7 @@ const ServiceDetailsPage = () => {
                       
                       <div className="space-y-3 pt-2">
                         <Button 
-                          className="w-full bg-tc-green hover:bg-tc-green-dark text-white"
+                          className="w-full h-11 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-xl font-medium"
                           onClick={handleConfirmBooking}
                           disabled={bookingLoading}
                         >
@@ -417,7 +427,7 @@ const ServiceDetailsPage = () => {
                         
                         <Button 
                           variant="outline" 
-                          className="w-full"
+                          className="w-full h-11 rounded-xl border-gray-200 dark:border-gray-700"
                           onClick={handlePreviousStep}
                           disabled={bookingLoading}
                         >

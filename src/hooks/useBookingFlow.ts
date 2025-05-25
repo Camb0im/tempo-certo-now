@@ -7,11 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 
 interface BookingData {
   serviceId: string;
-  providerId: string;
-  date: string;
-  time: string;
-  notes?: string;
-  totalAmount: number;
+  timeSlotId: string;
+  paymentAmount: number;
 }
 
 export const useBookingFlow = () => {
@@ -33,18 +30,15 @@ export const useBookingFlow = () => {
     setLoading(true);
 
     try {
-      // Criar o agendamento no banco de dados
+      // Criar o agendamento no banco de dados usando os campos corretos
       const { data: booking, error } = await supabase
         .from('bookings')
         .insert({
           user_id: user.id,
           service_id: bookingData.serviceId,
-          provider_id: bookingData.providerId,
-          booking_date: bookingData.date,
-          booking_time: bookingData.time,
-          notes: bookingData.notes,
-          total_amount: bookingData.totalAmount,
-          status: 'pending',
+          time_slot_id: bookingData.timeSlotId,
+          payment_amount: bookingData.paymentAmount,
+          status: 'confirmed',
           payment_status: 'pending'
         })
         .select()

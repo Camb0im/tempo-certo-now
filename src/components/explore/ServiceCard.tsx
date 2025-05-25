@@ -28,7 +28,7 @@ const StarRating = memo(({ rating }: { rating: number }) => (
     {Array(5).fill(0).map((_, i) => (
       <Star 
         key={i}
-        className={`h-4 w-4 transition-colors ${i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-tc-gray-300"}`}
+        className={`h-4 w-4 transition-colors ${i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
       />
     ))}
   </div>
@@ -54,8 +54,8 @@ const ServiceCard = memo(({ service }: ServiceCardProps) => {
   };
 
   return (
-    <Card className="minimal-card hover:shadow-card transition-all duration-300 hover:scale-[1.02] group overflow-hidden">
-      <div className="h-48 bg-tc-gray-100 relative overflow-hidden">
+    <Card className="bg-white dark:bg-gray-900 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group overflow-hidden border border-gray-200 dark:border-gray-700 rounded-xl">
+      <div className="h-48 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
         <img 
           src={service.image} 
           alt={service.name}
@@ -65,7 +65,7 @@ const ServiceCard = memo(({ service }: ServiceCardProps) => {
         
         {/* Business Logo */}
         {service.businessLogo && (
-          <div className="absolute top-3 left-3 w-12 h-12 bg-white rounded-lg shadow-minimal p-2">
+          <div className="absolute top-3 left-3 w-12 h-12 bg-white dark:bg-gray-900 rounded-xl shadow-sm p-2">
             <img 
               src={service.businessLogo} 
               alt={`Logo ${service.provider}`}
@@ -75,45 +75,45 @@ const ServiceCard = memo(({ service }: ServiceCardProps) => {
         )}
         
         {/* Distance Badge */}
-        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-tc-gray-700">
+        <div className="absolute top-3 right-3 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300">
           {service.distance} km
         </div>
       </div>
       
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-hierarchy-3 group-hover:text-tc-blue transition-colors line-clamp-1">
+            <CardTitle className="text-lg font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 text-gray-900 dark:text-gray-100">
               {service.name}
             </CardTitle>
-            <CardDescription className="text-body mt-1">{service.provider}</CardDescription>
+            <CardDescription className="text-sm mt-1 text-gray-600 dark:text-gray-400">{service.provider}</CardDescription>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-3 pt-0">
-        <div className="flex items-center text-caption">
-          <MapPin className="h-4 w-4 mr-2 text-tc-gray-400 flex-shrink-0" />
+      <CardContent className="space-y-3 pt-0 px-6">
+        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+          <MapPin className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500 flex-shrink-0" />
           <span className="line-clamp-1">{service.location}</span>
         </div>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <StarRating rating={service.rating} />
-            <span className="text-sm font-medium text-tc-gray-700">{service.rating}</span>
-            <span className="text-caption">({service.reviews})</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{service.rating}</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">({service.reviews})</span>
           </div>
           
           <div className="text-right">
-            <div className="text-hierarchy-3 text-tc-blue">R$ {service.price.toFixed(2)}</div>
+            <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">R$ {service.price.toFixed(2)}</div>
           </div>
         </div>
       </CardContent>
       
-      <CardFooter className="pt-0">
+      <CardFooter className="pt-0 p-6">
         <Button 
           onClick={handleBookingClick}
-          className="w-full minimal-button bg-tc-blue hover:bg-tc-blue-dark text-white"
+          className="w-full h-11 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-xl transition-colors duration-200"
         >
           Agendar Agora
         </Button>
