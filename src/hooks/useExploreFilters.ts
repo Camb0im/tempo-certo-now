@@ -87,6 +87,11 @@ export const useExploreFilters = () => {
     rating: "all"
   });
 
+  const handleCategorySelect = useCallback((categoryId: string) => {
+    // Toggle: se a categoria já está selecionada, limpa o filtro
+    setSelectedCategory(prev => prev === categoryId ? "" : categoryId);
+  }, []);
+
   const filteredServices = useMemo(() => {
     let filtered = [...servicesData];
     
@@ -151,7 +156,7 @@ export const useExploreFilters = () => {
     searchTerm,
     setSearchTerm,
     selectedCategory,
-    setSelectedCategory,
+    setSelectedCategory: handleCategorySelect,
     filtersCollapsed,
     setFiltersCollapsed,
     filters,

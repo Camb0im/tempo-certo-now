@@ -1,12 +1,32 @@
-
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Users, Calendar, BarChart, Settings, Shield, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const BusinessPage = () => {
+  const { toast } = useToast();
+
+  const handlePlanSelection = (planName: string) => {
+    toast({
+      title: `Plano ${planName} selecionado!`,
+      description: "Redirecionando para o processo de cadastro...",
+    });
+    // Simular redirecionamento após 2 segundos
+    setTimeout(() => {
+      window.location.href = "/provider/register";
+    }, 2000);
+  };
+
+  const handleContactSales = () => {
+    toast({
+      title: "Contato com vendas",
+      description: "Em breve nossa equipe entrará em contato com você!",
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -20,10 +40,17 @@ const BusinessPage = () => {
                   Transforme a experiência dos seus clientes e optimize sua agenda com agendamentos simplificados.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button className="bg-white text-tc-blue hover:bg-gray-100 font-semibold text-lg">
+                  <Button 
+                    className="bg-white text-tc-blue hover:bg-gray-100 font-semibold text-lg"
+                    onClick={() => handlePlanSelection("Iniciante")}
+                  >
                     Comece agora
                   </Button>
-                  <Button variant="outline" className="border-white text-white hover:bg-white/10 font-semibold">
+                  <Button 
+                    variant="outline" 
+                    className="border-white text-white hover:bg-white hover:text-tc-blue font-semibold"
+                    onClick={handleContactSales}
+                  >
                     Fale com vendas
                   </Button>
                 </div>
@@ -166,8 +193,8 @@ const BusinessPage = () => {
               </div>
               <div className="hidden lg:flex justify-center">
                 <img
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
-                  alt="Profissional gerenciando agenda"
+                  src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
+                  alt="Atendente apertando a mão de um cliente"
                   className="rounded-xl shadow-lg object-cover h-[500px]"
                 />
               </div>
@@ -209,6 +236,7 @@ const BusinessPage = () => {
                   </ul>
                   <Button
                     className="w-full bg-white border border-tc-blue text-tc-blue hover:bg-tc-blue hover:text-white"
+                    onClick={() => handlePlanSelection("Iniciante")}
                   >
                     Comece agora
                   </Button>
@@ -250,6 +278,7 @@ const BusinessPage = () => {
                   </ul>
                   <Button
                     className="w-full bg-tc-blue hover:bg-tc-blue-dark text-white"
+                    onClick={() => handlePlanSelection("Profissional")}
                   >
                     Escolher plano
                   </Button>
@@ -284,6 +313,7 @@ const BusinessPage = () => {
                   </ul>
                   <Button
                     className="w-full bg-white border border-tc-blue text-tc-blue hover:bg-tc-blue hover:text-white"
+                    onClick={handleContactSales}
                   >
                     Fale com vendas
                   </Button>

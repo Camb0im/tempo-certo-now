@@ -2,8 +2,28 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const PricingSection = () => {
+  const { toast } = useToast();
+
+  const handlePlanSelection = (planName: string) => {
+    toast({
+      title: `Plano ${planName} selecionado!`,
+      description: "Redirecionando para o processo de agendamento...",
+    });
+    
+    if (planName === "Básico") {
+      setTimeout(() => {
+        window.location.href = "/explore";
+      }, 2000);
+    } else {
+      setTimeout(() => {
+        window.location.href = "/cadastro";
+      }, 2000);
+    }
+  };
+
   const plans = [
     {
       name: "Básico",
@@ -98,6 +118,7 @@ const PricingSection = () => {
                       ? "bg-tc-blue hover:bg-tc-blue-dark"
                       : "bg-white border border-tc-blue text-tc-blue hover:bg-tc-blue hover:text-white"
                   }`}
+                  onClick={() => handlePlanSelection(plan.name)}
                 >
                   {plan.button}
                 </Button>

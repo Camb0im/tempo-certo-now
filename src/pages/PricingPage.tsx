@@ -6,8 +6,28 @@ import PricingSection from "@/components/PricingSection";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import CtaSection from "@/components/CtaSection";
+import { useToast } from "@/hooks/use-toast";
 
 const PricingPage = () => {
+  const { toast } = useToast();
+
+  const handlePlanSelection = (planName: string) => {
+    toast({
+      title: `Plano ${planName} selecionado!`,
+      description: "Redirecionando para o processo de agendamento...",
+    });
+    
+    if (planName === "Básico") {
+      setTimeout(() => {
+        window.location.href = "/explore";
+      }, 2000);
+    } else {
+      setTimeout(() => {
+        window.location.href = "/cadastro";
+      }, 2000);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -93,13 +113,30 @@ const PricingPage = () => {
                   <tr>
                     <td className="py-4 px-4"></td>
                     <td className="py-4 px-4 text-center">
-                      <Button variant="outline" className="w-full border-tc-blue text-tc-blue">Escolher</Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-tc-blue text-tc-blue hover:bg-tc-blue hover:text-white"
+                        onClick={() => handlePlanSelection("Básico")}
+                      >
+                        Escolher
+                      </Button>
                     </td>
                     <td className="py-4 px-4 text-center bg-tc-blue bg-opacity-5 rounded-b-lg">
-                      <Button className="w-full bg-tc-blue hover:bg-tc-blue-dark">Escolher</Button>
+                      <Button 
+                        className="w-full bg-tc-blue hover:bg-tc-blue-dark"
+                        onClick={() => handlePlanSelection("Premium")}
+                      >
+                        Escolher
+                      </Button>
                     </td>
                     <td className="py-4 px-4 text-center">
-                      <Button variant="outline" className="w-full border-tc-blue text-tc-blue">Escolher</Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-tc-blue text-tc-blue hover:bg-tc-blue hover:text-white"
+                        onClick={() => handlePlanSelection("Negócios")}
+                      >
+                        Escolher
+                      </Button>
                     </td>
                   </tr>
                 </tbody>
