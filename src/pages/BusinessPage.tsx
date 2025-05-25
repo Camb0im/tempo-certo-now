@@ -47,8 +47,7 @@ const BusinessPage = () => {
                     Comece agora
                   </Button>
                   <Button 
-                    variant="outline" 
-                    className="border-white text-white hover:bg-white hover:text-tc-blue font-semibold"
+                    className="bg-white text-tc-blue hover:bg-gray-100 font-semibold text-lg border-white"
                     onClick={handleContactSales}
                   >
                     Fale com vendas
@@ -107,7 +106,7 @@ const BusinessPage = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
               <div className="h-12 w-12 rounded-full bg-tc-blue bg-opacity-10 flex items-center justify-center mb-4">
                 <Calendar className="h-6 w-6 text-tc-blue" />
               </div>
@@ -117,7 +116,7 @@ const BusinessPage = () => {
               </p>
             </div>
             
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
               <div className="h-12 w-12 rounded-full bg-tc-blue bg-opacity-10 flex items-center justify-center mb-4">
                 <Users className="h-6 w-6 text-tc-blue" />
               </div>
@@ -127,7 +126,7 @@ const BusinessPage = () => {
               </p>
             </div>
             
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
               <div className="h-12 w-12 rounded-full bg-tc-blue bg-opacity-10 flex items-center justify-center mb-4">
                 <BarChart className="h-6 w-6 text-tc-blue" />
               </div>
@@ -193,7 +192,7 @@ const BusinessPage = () => {
               </div>
               <div className="hidden lg:flex justify-center">
                 <img
-                  src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
+                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80"
                   alt="Atendente apertando a mão de um cliente"
                   className="rounded-xl shadow-lg object-cover h-[500px]"
                 />

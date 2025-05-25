@@ -26,7 +26,7 @@ const HowItWorksPage = () => {
             <h2 className="text-2xl font-bold mb-6">Perguntas Frequentes</h2>
             
             <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
                 <h3 className="text-lg font-semibold mb-2">Como o TempoCerto funciona para prestadores de serviços?</h3>
                 <p className="text-gray-600">
                   Os prestadores de serviços podem se cadastrar na plataforma, definir sua agenda e disponibilizar horários. 
@@ -35,7 +35,7 @@ const HowItWorksPage = () => {
                 </p>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
                 <h3 className="text-lg font-semibold mb-2">Preciso pagar para cada agendamento?</h3>
                 <p className="text-gray-600">
                   No plano Básico, você paga R$ 0,99 por agendamento. Se você utiliza o serviço com frequência, 
@@ -44,7 +44,7 @@ const HowItWorksPage = () => {
                 </p>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
                 <h3 className="text-lg font-semibold mb-2">O que acontece se eu não comparecer ao horário agendado?</h3>
                 <p className="text-gray-600">
                   Cancelamentos devem ser feitos com a antecedência mínima definida pelo prestador de serviço. 
@@ -53,7 +53,7 @@ const HowItWorksPage = () => {
                 </p>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:z-10 relative">
                 <h3 className="text-lg font-semibold mb-2">Em quais cidades o TempoCerto está disponível?</h3>
                 <p className="text-gray-600">
                   Atualmente estamos em fase de expansão, com operação inicialmente nas principais capitais brasileiras. 

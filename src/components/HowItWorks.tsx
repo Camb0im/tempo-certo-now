@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Search, Calendar, CreditCard, Clock } from "lucide-react";
 
 const steps = [
@@ -26,6 +26,33 @@ const steps = [
 ];
 
 const HowItWorks = () => {
+  const [iconScales, setIconScales] = useState([1, 1, 1, 1]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const elements = document.querySelectorAll('.step-icon');
+      const viewportCenter = window.innerHeight / 2;
+      
+      const newScales = Array.from(elements).map((element) => {
+        const rect = element.getBoundingClientRect();
+        const elementCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(elementCenter - viewportCenter);
+        const maxDistance = window.innerHeight / 2;
+        
+        // Calcular escala baseada na proximidade (1.0 a 1.3)
+        const proximityRatio = Math.max(0, (maxDistance - distance) / maxDistance);
+        return 1 + (proximityRatio * 0.3);
+      });
+      
+      setIconScales(newScales);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Calcular escala inicial
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
@@ -46,7 +73,10 @@ const HowItWorks = () => {
               {steps.map((step, index) => (
                 <div key={index} className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center`}>
                   <div className="md:w-1/2 p-6 flex justify-center">
-                    <div className="h-16 w-16 rounded-full bg-tc-blue flex items-center justify-center z-10 shadow-lg">
+                    <div 
+                      className="step-icon h-16 w-16 rounded-full bg-tc-blue flex items-center justify-center z-10 shadow-lg transition-transform duration-300 ease-out"
+                      style={{ transform: `scale(${iconScales[index] || 1})` }}
+                    >
                       {step.icon}
                       <span className="absolute -bottom-1 -right-1 bg-white h-6 w-6 rounded-full border-2 border-tc-blue flex items-center justify-center text-xs font-bold">
                         {index + 1}
