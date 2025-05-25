@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBookingFlow } from "@/hooks/useBookingFlow";
+import { BookingData, ServiceData } from "@/types/booking";
 
 interface CustomerJourneyModalProps {
   isOpen: boolean;
@@ -31,14 +31,16 @@ type JourneyStep = 'search' | 'select' | 'book' | 'payment' | 'confirmation';
 
 const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) => {
   const [currentStep, setCurrentStep] = useState<JourneyStep>('search');
-  const [selectedService, setSelectedService] = useState<any>(null);
-  const [bookingData, setBookingData] = useState({
+  const [selectedService, setSelectedService] = useState<ServiceData | null>(null);
+  const [bookingData, setBookingData] = useState<BookingData>({
     date: '',
     time: '',
     notes: '',
     name: '',
     email: '',
-    phone: ''
+    phone: '',
+    serviceId: '',
+    providerId: ''
   });
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -52,7 +54,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
     { id: 'confirmation', title: 'Confirmação', icon: CheckCircle }
   ];
 
-  const mockServices = [
+  const mockServices: ServiceData[] = [
     {
       id: 1,
       name: "Corte Masculino Premium",
@@ -81,8 +83,13 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
     }
   ];
 
-  const handleServiceSelect = (service: any) => {
+  const handleServiceSelect = (service: ServiceData) => {
     setSelectedService(service);
+    setBookingData(prev => ({
+      ...prev,
+      serviceId: service.id.toString(),
+      providerId: 'mock-provider-id'
+    }));
     setCurrentStep('book');
   };
 
@@ -93,14 +100,14 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
       return;
     }
 
-    if (!bookingData.date || !bookingData.time) {
+    if (!bookingData.date || !bookingData.time || !selectedService) {
       return;
     }
 
     const booking = await createBooking({
       serviceId: selectedService.id.toString(),
       timeSlotId: 'mock-time-slot-id',
-      paymentAmount: selectedService.price * 100 // Convert to cents
+      paymentAmount: selectedService.price * 100
     });
 
     if (booking) {
