@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -51,8 +52,6 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
     { id: 'confirmation', title: 'Confirmação', icon: CheckCircle }
   ];
 
-  // ... keep existing code (mockServices array)
-
   const mockServices = [
     {
       id: 1,
@@ -100,11 +99,8 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
 
     const booking = await createBooking({
       serviceId: selectedService.id.toString(),
-      providerId: 'provider-demo',
-      date: bookingData.date,
-      time: bookingData.time,
-      notes: bookingData.notes,
-      totalAmount: selectedService.price
+      timeSlotId: 'mock-time-slot-id',
+      paymentAmount: selectedService.price * 100 // Convert to cents
     });
 
     if (booking) {
@@ -122,30 +118,30 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
         return (
           <div className="space-y-6">
             <div className="text-center space-y-4">
-              <h3 className="text-hierarchy-2">Encontre o serviço perfeito</h3>
-              <p className="text-body">Explore nossa seleção de serviços disponíveis</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Encontre o serviço perfeito</h3>
+              <p className="text-gray-600 dark:text-gray-400">Explore nossa seleção de serviços disponíveis</p>
             </div>
             
             <div className="space-y-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-tc-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input 
                   placeholder="Buscar serviços..." 
-                  className="minimal-input pl-10"
+                  className="pl-10 h-12 rounded-xl border-gray-200 dark:border-gray-700"
                 />
               </div>
               
               <div className="grid gap-4">
                 {mockServices.map((service) => (
-                  <Card key={service.id} className="minimal-card hover:shadow-card transition-all cursor-pointer" onClick={() => handleServiceSelect(service)}>
+                  <Card key={service.id} className="hover:shadow-lg transition-all cursor-pointer rounded-xl border-gray-200 dark:border-gray-700" onClick={() => handleServiceSelect(service)}>
                     <CardContent className="p-4">
                       <div className="flex gap-4">
                         <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                           <img src={service.image} alt={service.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-hierarchy-3 line-clamp-1">{service.name}</h4>
-                          <p className="text-body text-sm">{service.provider}</p>
+                          <h4 className="text-lg font-semibold line-clamp-1 text-gray-900 dark:text-gray-100">{service.name}</h4>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">{service.provider}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex items-center gap-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -155,8 +151,8 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-hierarchy-3 text-tc-blue">R$ {service.price.toFixed(2)}</div>
-                          <div className="text-caption">{service.duration}</div>
+                          <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">R$ {service.price.toFixed(2)}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{service.duration}</div>
                         </div>
                       </div>
                     </CardContent>
@@ -171,8 +167,8 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
         return (
           <div className="space-y-6">
             <div className="text-center space-y-4">
-              <h3 className="text-hierarchy-2">Agendar {selectedService?.name}</h3>
-              <p className="text-body">{selectedService?.provider}</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Agendar {selectedService?.name}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{selectedService?.provider}</p>
               {!user && (
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <p className="text-sm text-amber-700">
@@ -189,7 +185,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                   <Input 
                     id="date"
                     type="date" 
-                    className="minimal-input mt-2"
+                    className="h-12 rounded-xl border-gray-200 dark:border-gray-700 mt-2"
                     value={bookingData.date}
                     onChange={(e) => setBookingData(prev => ({ ...prev, date: e.target.value }))}
                   />
@@ -200,7 +196,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                   <Input 
                     id="time"
                     type="time" 
-                    className="minimal-input mt-2"
+                    className="h-12 rounded-xl border-gray-200 dark:border-gray-700 mt-2"
                     value={bookingData.time}
                     onChange={(e) => setBookingData(prev => ({ ...prev, time: e.target.value }))}
                   />
@@ -214,7 +210,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                     <Input 
                       id="name"
                       placeholder="Seu nome"
-                      className="minimal-input mt-2"
+                      className="h-12 rounded-xl border-gray-200 dark:border-gray-700 mt-2"
                       value={bookingData.name}
                       onChange={(e) => setBookingData(prev => ({ ...prev, name: e.target.value }))}
                     />
@@ -225,7 +221,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                     <Input 
                       id="phone"
                       placeholder="(11) 99999-9999"
-                      className="minimal-input mt-2"
+                      className="h-12 rounded-xl border-gray-200 dark:border-gray-700 mt-2"
                       value={bookingData.phone}
                       onChange={(e) => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
                     />
@@ -240,7 +236,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                 <Textarea 
                   id="notes"
                   placeholder="Alguma informação adicional..."
-                  className="minimal-input mt-2"
+                  className="rounded-xl border-gray-200 dark:border-gray-700 mt-2"
                   value={bookingData.notes}
                   onChange={(e) => setBookingData(prev => ({ ...prev, notes: e.target.value }))}
                 />
@@ -249,7 +245,7 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
 
             <Button 
               onClick={handleBookingSubmit}
-              className="w-full minimal-button bg-tc-blue hover:bg-tc-blue-dark text-white"
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-xl font-medium"
               disabled={!bookingData.date || !bookingData.time || loading}
             >
               {loading ? "Processando..." : user ? "Continuar para Pagamento" : "Fazer Login para Continuar"}
@@ -262,37 +258,37 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
         return (
           <div className="space-y-6">
             <div className="text-center space-y-4">
-              <h3 className="text-hierarchy-2">Finalizar Pagamento</h3>
-              <p className="text-body">Confirme os detalhes e realize o pagamento</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Finalizar Pagamento</h3>
+              <p className="text-gray-600 dark:text-gray-400">Confirme os detalhes e realize o pagamento</p>
             </div>
 
-            <Card className="minimal-card">
+            <Card className="rounded-xl border-gray-200 dark:border-gray-700">
               <CardHeader>
                 <CardTitle className="text-lg">Resumo do Agendamento</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-body">Serviço:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Serviço:</span>
                   <span className="font-medium">{selectedService?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-body">Data:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Data:</span>
                   <span className="font-medium">{new Date(bookingData.date).toLocaleDateString('pt-BR')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-body">Horário:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Horário:</span>
                   <span className="font-medium">{bookingData.time}</span>
                 </div>
                 <div className="flex justify-between border-t pt-4">
-                  <span className="text-hierarchy-3">Total:</span>
-                  <span className="text-hierarchy-3 text-tc-blue">R$ {selectedService?.price.toFixed(2)}</span>
+                  <span className="text-lg font-semibold">Total:</span>
+                  <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">R$ {selectedService?.price.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>
 
             <Button 
               onClick={handlePaymentComplete}
-              className="w-full minimal-button bg-tc-green hover:bg-tc-green-dark text-white"
+              className="w-full h-12 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-xl font-medium"
               disabled={loading}
             >
               <CreditCard className="h-4 w-4 mr-2" />
@@ -305,17 +301,17 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
         return (
           <div className="space-y-6 text-center">
             <div className="space-y-4">
-              <div className="w-16 h-16 bg-tc-green/10 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle className="h-8 w-8 text-tc-green" />
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-500" />
               </div>
-              <h3 className="text-hierarchy-2">Agendamento Confirmado!</h3>
-              <p className="text-body">Seu agendamento foi realizado com sucesso.</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Agendamento Confirmado!</h3>
+              <p className="text-gray-600 dark:text-gray-400">Seu agendamento foi realizado com sucesso.</p>
             </div>
 
-            <Card className="minimal-card">
+            <Card className="rounded-xl border-gray-200 dark:border-gray-700">
               <CardContent className="p-6 space-y-3">
                 <div className="text-left">
-                  <p className="text-caption mb-2">Detalhes do agendamento:</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Detalhes do agendamento:</p>
                   <div className="space-y-2">
                     <p><strong>Serviço:</strong> {selectedService?.name}</p>
                     <p><strong>Local:</strong> {selectedService?.provider}</p>
@@ -329,14 +325,14 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
             <div className="flex gap-3">
               <Button 
                 onClick={() => navigate('/dashboard')}
-                className="flex-1 minimal-button bg-tc-blue hover:bg-tc-blue-dark text-white"
+                className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-xl font-medium"
               >
                 Ver Agendamentos
               </Button>
               <Button 
                 onClick={onClose}
                 variant="outline"
-                className="flex-1 minimal-button"
+                className="flex-1 h-12 rounded-xl border-gray-200 dark:border-gray-700"
               >
                 Fechar
               </Button>
@@ -351,9 +347,9 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl minimal-card shadow-modal max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl rounded-xl border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pb-6">
-          <DialogTitle className="text-hierarchy-1">Faça seu primeiro agendamento</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">Faça seu primeiro agendamento</DialogTitle>
           
           {/* Progress Steps */}
           <div className="flex items-center justify-between mt-6 px-4">
@@ -365,9 +361,9 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
               return (
                 <div key={step.id} className="flex items-center">
                   <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-                    isActive ? 'bg-tc-blue text-white' : 
-                    isCompleted ? 'bg-tc-green text-white' : 
-                    'bg-tc-gray-200 text-tc-gray-500'
+                    isActive ? 'bg-blue-600 text-white' : 
+                    isCompleted ? 'bg-green-600 text-white' : 
+                    'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                   }`}>
                     {isCompleted ? (
                       <CheckCircle className="h-5 w-5" />
@@ -376,16 +372,16 @@ const CustomerJourneyModal = ({ isOpen, onClose }: CustomerJourneyModalProps) =>
                     )}
                   </div>
                   <span className={`ml-2 text-sm font-medium ${
-                    isActive ? 'text-tc-blue' : 
-                    isCompleted ? 'text-tc-green' : 
-                    'text-tc-gray-500'
+                    isActive ? 'text-blue-600 dark:text-blue-400' : 
+                    isCompleted ? 'text-green-600 dark:text-green-500' : 
+                    'text-gray-500 dark:text-gray-400'
                   }`}>
                     {step.title}
                   </span>
                   
                   {index < steps.length - 1 && (
                     <div className={`w-12 h-0.5 mx-4 ${
-                      isCompleted ? 'bg-tc-green' : 'bg-tc-gray-200'
+                      isCompleted ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'
                     }`} />
                   )}
                 </div>
