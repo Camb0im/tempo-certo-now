@@ -63,26 +63,34 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// TempoCerto minimalista colors
-				"tc-blue": "#3B82F6",
+				// TempoCerto Brand Identity Colors
+				"brand": {
+					primary: "#3A506B",      // Azul Ardósia Profundo
+					secondary: "#6FFFB0",    // Verde Menta Vibrante
+					ice: "#F0F7F4",          // Branco Gelo
+					"gray-soft": "#BCCCDC",  // Cinza Suave
+					"gray-medium": "#8A9BA8" // Cinza Médio
+				},
+				// TempoCerto minimalista colors (mantendo compatibilidade)
+				"tc-blue": "#3A506B",
 				"tc-blue-dark": "#2563EB",
 				"tc-purple": "#6366F1",
 				"tc-purple-dark": "#4F46E5",
-				"tc-green": "#10B981",
+				"tc-green": "#6FFFB0",
 				"tc-green-dark": "#059669",
 				"tc-red": "#EF4444",
 				"tc-red-dark": "#DC2626",
 				"tc-gray": {
-					50: "#F9FAFB",
+					50: "#F0F7F4",
 					100: "#F4F4F5",
-					200: "#E5E7EB",
+					200: "#BCCCDC",
 					300: "#D1D5DB",
 					400: "#9CA3AF",
-					500: "#6B7280",
+					500: "#8A9BA8",
 					600: "#4B5563",
 					700: "#374151",
 					800: "#1F2937",
-					900: "#111827"
+					900: "#3A506B"
 				},
 				"tc-dark": {
 					bg: "#1E1E2F",
@@ -96,8 +104,8 @@ export default {
 				sm: '6px'
 			},
 			fontFamily: {
-				sans: ['Inter', 'Helvetica Neue', 'Arial', 'sans-serif'],
-				display: ['Manrope', 'Inter', 'sans-serif']
+				sans: ['Nunito Sans', 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				display: ['Nunito Sans', 'Manrope', 'Inter', 'sans-serif']
 			},
 			fontSize: {
 				'base': ['16px', '24px'],
@@ -107,9 +115,10 @@ export default {
 				'88': '22rem'
 			},
 			boxShadow: {
-				'minimal': '0 2px 8px rgba(0, 0, 0, 0.04)',
-				'card': '0 4px 12px rgba(0, 0, 0, 0.08)',
-				'modal': '0 8px 32px rgba(0, 0, 0, 0.12)'
+				'minimal': '0 2px 8px rgba(58, 80, 107, 0.08)',
+				'card': '0 4px 12px rgba(58, 80, 107, 0.12)',
+				'modal': '0 8px 32px rgba(58, 80, 107, 0.16)',
+				'brand': '0 4px 20px rgba(111, 255, 176, 0.15)'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -139,6 +148,10 @@ export default {
 				'slide-up': {
 					'0%': { opacity: '0', transform: 'translateY(8px)' },
 					'100%': { opacity: '1', transform: 'translateY(0)' }
+				},
+				'brand-pulse': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' }
 				}
 			},
 			animation: {
@@ -146,7 +159,8 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
-				'slide-up': 'slide-up 0.3s ease-out'
+				'slide-up': 'slide-up 0.3s ease-out',
+				'brand-pulse': 'brand-pulse 2s ease-in-out infinite'
 			}
 		}
 	},
