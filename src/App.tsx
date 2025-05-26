@@ -22,6 +22,8 @@ import NotFound from "./pages/NotFound";
 import ExplorePage from "./pages/ExplorePage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import BrandIdentityPage from "./pages/BrandIdentityPage";
+import WireframesPage from "./pages/WireframesPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +51,10 @@ const App = () => (
               <Route path="/precos" element={<PricingPage />} />
               <Route path="/explore" element={<ExplorePage />} />
               <Route path="/service/:id" element={<ServiceDetailsPage />} />
+              
+              {/* Rotas de design e identidade */}
+              <Route path="/brand-identity" element={<BrandIdentityPage />} />
+              <Route path="/wireframes" element={<WireframesPage />} />
               
               {/* Rotas de autenticação */}
               <Route 
