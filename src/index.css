@@ -20,6 +20,100 @@
       opacity: 1;
     }
   }
+
+  /* Novas animações para elementos de encantamento */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 5px rgba(111, 255, 176, 0.3);
+    }
+    to {
+      box-shadow: 0 0 20px rgba(111, 255, 176, 0.6), 0 0 30px rgba(111, 255, 176, 0.4);
+    }
+  }
+
+  .animate-gradient {
+    background-size: 400% 400%;
+    animation: gradient 3s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-heartbeat {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1);
+    }
+    14% {
+      transform: scale(1.1);
+    }
+    28% {
+      transform: scale(1);
+    }
+    42% {
+      transform: scale(1.1);
+    }
+    70% {
+      transform: scale(1);
+    }
+  }
+
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 7% {
+      transform: rotateZ(0);
+    }
+    15% {
+      transform: rotateZ(-15deg);
+    }
+    20% {
+      transform: rotateZ(10deg);
+    }
+    25% {
+      transform: rotateZ(-10deg);
+    }
+    30% {
+      transform: rotateZ(6deg);
+    }
+    35% {
+      transform: rotateZ(-4deg);
+    }
+    40%, 100% {
+      transform: rotateZ(0);
+    }
+  }
 }
 
 @layer base {
@@ -162,6 +256,31 @@
   
   .brand-shadow {
     @apply shadow-brand;
+  }
+
+  /* Elementos de encantamento */
+  .enchantment-card {
+    @apply brand-card hover:shadow-xl hover:scale-105 transition-all duration-300;
+  }
+
+  .enchantment-button {
+    @apply brand-button-primary hover:shadow-lg hover:scale-105 active:scale-95;
+  }
+
+  .magic-border {
+    @apply border-2 border-transparent bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-border;
+  }
+
+  .floating-element {
+    @apply animate-float;
+  }
+
+  .glow-effect {
+    @apply animate-glow;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent;
   }
 }
 

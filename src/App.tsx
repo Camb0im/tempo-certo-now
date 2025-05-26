@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +25,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BrandIdentityPage from "./pages/BrandIdentityPage";
 import WireframesPage from "./pages/WireframesPage";
 import MockupsPage from "./pages/MockupsPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import UserProfilePage from "./pages/UserProfilePage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +50,7 @@ const App = () => (
             <Routes>
               {/* Rotas públicas */}
               <Route path="/" element={<Index />} />
+              <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/como-funciona" element={<HowItWorksPage />} />
               <Route path="/para-negocios" element={<BusinessPage />} />
               <Route path="/precos" element={<PricingPage />} />
@@ -81,6 +86,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/perfil" 
+                element={
+                  <ProtectedRoute>
+                    <UserProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/notificacoes" 
+                element={
+                  <ProtectedRoute>
+                    <NotificationsPage />
                   </ProtectedRoute>
                 } 
               />
