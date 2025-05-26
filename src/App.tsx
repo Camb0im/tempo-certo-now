@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +23,7 @@ import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import BrandIdentityPage from "./pages/BrandIdentityPage";
 import WireframesPage from "./pages/WireframesPage";
+import MockupsPage from "./pages/MockupsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +55,7 @@ const App = () => (
               {/* Rotas de design e identidade */}
               <Route path="/brand-identity" element={<BrandIdentityPage />} />
               <Route path="/wireframes" element={<WireframesPage />} />
+              <Route path="/mockups" element={<MockupsPage />} />
               
               {/* Rotas de autenticação */}
               <Route 

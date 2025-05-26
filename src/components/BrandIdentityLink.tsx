@@ -1,11 +1,18 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Palette, Layout } from "lucide-react";
+import { Palette, Layout, Smartphone } from "lucide-react";
 
 const BrandIdentityLink = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50 space-y-2">
+      <Link
+        to="/mockups"
+        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-secondary to-brand-primary text-white rounded-lg shadow-brand hover:shadow-xl transition-all duration-200 font-medium transform hover:scale-105"
+      >
+        <Smartphone className="h-4 w-4" />
+        Ver Mockups HD
+      </Link>
       <Link
         to="/wireframes"
         className="flex items-center gap-2 px-4 py-2 bg-brand-secondary text-brand-primary rounded-lg shadow-brand hover:bg-brand-primary hover:text-white transition-all duration-200 font-medium"
