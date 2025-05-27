@@ -1,124 +1,141 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import TempoCertoLogo from "@/components/TempoCertoLogo";
-import {
-  Menu,
-  X,
-  UserCircle,
-  Calendar,
-  Store,
-  ChevronDown,
-} from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import UserMenu from "@/components/UserMenu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const navItems = [
+    { label: "Início", href: "/", show: true },
+    { label: "Como Funciona", href: "/como-funciona", show: true },
+    { label: "Para Negócios", href: "/para-negocios", show: true },
+    { label: "Preços", href: "/precos", show: true },
+    { label: "Explorar", href: "/explore", show: true },
+    { label: "Dashboard", href: "/dashboard", show: !!user },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(href);
+  };
 
   return (
-    <header className="border-b sticky top-0 bg-white z-50">
-      <div className="container mx-auto flex items-center justify-between py-4">
-        <div className="flex items-center gap-4">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>
-                  <TempoCertoLogo size="lg" />
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 space-y-6">
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground">Menu</h3>
-                  <div className="space-y-2">
-                    <Link
-                      to="/explore"
-                      className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
-                    >
-                      Explorar Serviços
-                    </Link>
-                    <Link
-                      to="/como-funciona"
-                      className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
-                    >
-                      Como funciona
-                    </Link>
-                    <Link
-                      to="/para-negocios"
-                      className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
-                    >
-                      Para negócios
-                    </Link>
-                    <Link
-                      to="/precos"
-                      className="flex items-center rounded-md px-2 py-2 hover:bg-muted"
-                    >
-                      Preços
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-          
-          <TempoCertoLogo />
-        </div>
-        
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/explore" className="text-gray-600 hover:text-tc-blue transition-colors">
-            Explorar Serviços
-          </Link>
-          <Link to="/como-funciona" className="text-gray-600 hover:text-tc-blue transition-colors">
-            Como funciona
-          </Link>
-          <Link to="/para-negocios" className="text-gray-600 hover:text-tc-blue transition-colors">
-            Para negócios
-          </Link>
-          <Link to="/precos" className="text-gray-600 hover:text-tc-blue transition-colors">
-            Preços
-          </Link>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          {user ? (
-            <Link to="/dashboard">
-              <Button variant="outline" className="flex items-center gap-2">
-                <UserCircle className="h-4 w-4" />
-                Minha Conta
-              </Button>
+    <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
+              <TempoCertoLogo />
             </Link>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button variant="outline" className="hidden sm:inline-flex">Entrar</Button>
-              </Link>
-              <Link to="/cadastro">
-                <Button className="bg-tc-blue hover:bg-tc-blue-dark">Cadastrar</Button>
-              </Link>
-            </>
-          )}
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              {navItems
+                .filter(item => item.show)
+                .map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(item.href)
+                      ? "text-tc-blue bg-tc-blue/10"
+                      : "text-gray-700 hover:text-tc-blue hover:bg-gray-100"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Auth */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <UserMenu />
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link to="/login">Entrar</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/cadastro">Cadastrar</Link>
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100">
+              {navItems
+                .filter(item => item.show)
+                .map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    isActive(item.href)
+                      ? "text-tc-blue bg-tc-blue/10"
+                      : "text-gray-700 hover:text-tc-blue hover:bg-gray-100"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              
+              {/* Mobile Auth */}
+              <div className="pt-4 pb-3 border-t border-gray-200">
+                {user ? (
+                  <div className="px-3">
+                    <UserMenu />
+                  </div>
+                ) : (
+                  <div className="space-y-2 px-3">
+                    <Button variant="ghost" className="w-full justify-start" asChild>
+                      <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                        Entrar
+                      </Link>
+                    </Button>
+                    <Button className="w-full" asChild>
+                      <Link to="/cadastro" onClick={() => setIsMenuOpen(false)}>
+                        Cadastrar
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </header>
+    </nav>
   );
 };
 

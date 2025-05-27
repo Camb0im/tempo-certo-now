@@ -4,9 +4,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Star } from "lucide-react";
 import BookingActions from "@/components/BookingActions";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { toast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const { upcomingBookings, bookingHistory, updateBooking } = useDashboardData();
@@ -14,14 +16,23 @@ const Dashboard = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "confirmed":
-        return <Badge className="bg-tc-green text-white">Confirmado</Badge>;
+        return <Badge className="bg-tc-green text-white min-w-[80px] justify-center">Confirmado</Badge>;
       case "completed":
-        return <Badge className="bg-tc-blue text-white">Concluído</Badge>;
+        return <Badge className="bg-tc-blue text-white min-w-[80px] justify-center">Concluído</Badge>;
       case "cancelled":
-        return <Badge variant="destructive">Cancelado</Badge>;
+        return <Badge variant="destructive" className="min-w-[80px] justify-center">Cancelado</Badge>;
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge variant="secondary" className="min-w-[80px] justify-center">{status}</Badge>;
     }
+  };
+
+  const handleRateService = (bookingId: string, serviceName: string) => {
+    toast({
+      title: "Avaliação",
+      description: `Avaliando: ${serviceName}`,
+    });
+    // Aqui seria implementado o modal de avaliação
+    console.log(`Rating service for booking ${bookingId}: ${serviceName}`);
   };
 
   return (
@@ -57,13 +68,15 @@ const Dashboard = () => {
                 <Card key={booking.id} className="transition-all hover:shadow-md">
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <div>
+                      <div className="flex-1">
                         <CardTitle className="text-xl">{booking.serviceName}</CardTitle>
                         <CardDescription className="text-base">
                           {booking.providerName}
                         </CardDescription>
                       </div>
-                      {getStatusBadge(booking.status)}
+                      <div className="flex items-center justify-end min-w-[100px]">
+                        {getStatusBadge(booking.status)}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -126,10 +139,14 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-lg">{booking.serviceName}</h3>
-                          {getStatusBadge(booking.status)}
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg">{booking.serviceName}</h3>
+                            <p className="text-gray-600 mb-2">{booking.providerName}</p>
+                          </div>
+                          <div className="flex items-center justify-end min-w-[100px] ml-4">
+                            {getStatusBadge(booking.status)}
+                          </div>
                         </div>
-                        <p className="text-gray-600 mb-2">{booking.providerName}</p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span className="flex items-center">
                             <Calendar className="h-4 w-4 mr-1" />
@@ -152,10 +169,15 @@ const Dashboard = () => {
                             R$ {booking.price.toFixed(2)}
                           </div>
                           {booking.status === "completed" && (
-                            <div className="flex items-center mt-1">
-                              <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                              <span className="text-sm text-gray-500">Avaliar</span>
-                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRateService(booking.id, booking.serviceName)}
+                              className="mt-2 flex items-center gap-1 text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                            >
+                              <Star className="h-4 w-4" />
+                              Avaliar
+                            </Button>
                           )}
                         </div>
                         

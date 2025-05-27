@@ -14,7 +14,7 @@ import {
   AlertCircle,
   Star,
   Trash2,
-  MarkAsUnreadIcon as MarkAsRead
+  Mail
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -175,7 +175,7 @@ const NotificationsPage = () => {
                     }}
                     className="h-8 px-2 text-brand-primary hover:bg-brand-secondary/20"
                   >
-                    <MarkAsRead className="h-3 w-3" />
+                    <Mail className="h-3 w-3" />
                   </Button>
                 )}
                 
