@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -39,125 +40,127 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-              {/* Rotas públicas */}
-              <Route path="/" element={<Index />} />
-              <Route path="/onboarding" element={<OnboardingPage />} />
-              <Route path="/como-funciona" element={<HowItWorksPage />} />
-              <Route path="/para-negocios" element={<BusinessPage />} />
-              <Route path="/precos" element={<PricingPage />} />
-              <Route path="/explore" element={<ExplorePage />} />
-              <Route path="/service/:id" element={<ServiceDetailsPage />} />
-              
-              {/* Rotas de design e identidade */}
-              <Route path="/brand-identity" element={<BrandIdentityPage />} />
-              <Route path="/wireframes" element={<WireframesPage />} />
-              <Route path="/mockups" element={<MockupsPage />} />
-              
-              {/* Rotas de autenticação */}
-              <Route 
-                path="/login" 
-                element={
-                  <ProtectedRoute requiresAuth={false}>
-                    <Login />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/cadastro" 
-                element={
-                  <ProtectedRoute requiresAuth={false}>
-                    <Register />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Rotas protegidas de usuário */}
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/perfil" 
-                element={
-                  <ProtectedRoute>
-                    <UserProfilePage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/notificacoes" 
-                element={
-                  <ProtectedRoute>
-                    <NotificationsPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/payment-success" 
-                element={
-                  <ProtectedRoute>
-                    <PaymentSuccess />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/booking/:id" 
-                element={
-                  <ProtectedRoute>
-                    <ServiceDetailsPage />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Rotas protegidas de prestador */}
-              <Route 
-                path="/provider/register" 
-                element={
-                  <ProtectedRoute>
-                    <ProviderRegister />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/provider/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <ProviderDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Rota de administração */}
-              <Route 
-                path="/admin" 
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Rota 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+const App: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <Routes>
+                {/* Rotas públicas */}
+                <Route path="/" element={<Index />} />
+                <Route path="/onboarding" element={<OnboardingPage />} />
+                <Route path="/como-funciona" element={<HowItWorksPage />} />
+                <Route path="/para-negocios" element={<BusinessPage />} />
+                <Route path="/precos" element={<PricingPage />} />
+                <Route path="/explore" element={<ExplorePage />} />
+                <Route path="/service/:id" element={<ServiceDetailsPage />} />
+                
+                {/* Rotas de design e identidade */}
+                <Route path="/brand-identity" element={<BrandIdentityPage />} />
+                <Route path="/wireframes" element={<WireframesPage />} />
+                <Route path="/mockups" element={<MockupsPage />} />
+                
+                {/* Rotas de autenticação */}
+                <Route 
+                  path="/login" 
+                  element={
+                    <ProtectedRoute requiresAuth={false}>
+                      <Login />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/cadastro" 
+                  element={
+                    <ProtectedRoute requiresAuth={false}>
+                      <Register />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Rotas protegidas de usuário */}
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/perfil" 
+                  element={
+                    <ProtectedRoute>
+                      <UserProfilePage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/notificacoes" 
+                  element={
+                    <ProtectedRoute>
+                      <NotificationsPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/payment-success" 
+                  element={
+                    <ProtectedRoute>
+                      <PaymentSuccess />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/booking/:id" 
+                  element={
+                    <ProtectedRoute>
+                      <ServiceDetailsPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Rotas protegidas de prestador */}
+                <Route 
+                  path="/provider/register" 
+                  element={
+                    <ProtectedRoute>
+                      <ProviderRegister />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/provider/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <ProviderDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Rota de administração */}
+                <Route 
+                  path="/admin" 
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Rota 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;
